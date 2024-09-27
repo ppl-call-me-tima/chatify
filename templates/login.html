@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Login
+{% endblock %}
+
+{% block main %}
+<div class="card align-items-center mx-auto my-5" style="height: 60vh; width: 30vw">
+    <div class="my-auto">
+        <h1 class="display-1 mb-5">LOGIN</h1>
+        <form class="d-flex flex-column align-items-center" action="/login" method="post">
+            <div class="mb-3">
+                <input autofocus class="form-control" name="username" placeholder="Username" type="text">
+            </div>
+            <div class="mb-3">
+                <input class="form-control" name="password" placeholder="Password" type="password">
+            </div>
+            <div>
+                <input class="btn btn-primary" type="submit" value="Login">
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
