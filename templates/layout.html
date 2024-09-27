@@ -40,7 +40,7 @@
 
 				<!-- left nav part -->
 				<ul class="navbar-nav mb-2 mb-lg-0">
-					{% if session.get("username") %}
+					{% if session.get("user_id") %}
 					<li class="nav-item"><a class="nav-link {% if request.endpoint == 'index' %} active {% endif %}"
 							aria-current="page" href="/">Home</a></li>
 					</li>
@@ -49,7 +49,7 @@
 
 				<!-- right nav part -->
 				<ul class="navbar-nav mb-2 mb-lg-0 ms-auto">
-					{% if session.get("username") %}
+					{% if session.get("user_id") %}
 					<li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
 					{% else %}
 					<li class="nav-item"><a class="nav-link {% if request.endpoint == 'register' %} active {% endif %}"

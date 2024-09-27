@@ -1,4 +1,5 @@
 from flask import Flask, render_template, redirect, request, session, url_for
+from database import execute, execute_retrieve
 from datetime import timedelta
 
 app = Flask(__name__)
@@ -12,7 +13,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 @app.route("/")
 def index():
-    # if user logged-in
+    # If user is logged-in
     if "user_id" in session:
         return render_template("index.html", user_id=session["user_id"])
     else:
@@ -22,20 +23,43 @@ def index():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        # for making a session permanent - so that it exists even after a browser is closed
+        # For making a session permanent - so that it exists even after a browser is closed
         session.permanent = True
         
         username = request.form.get("username")
         password = request.form.get("password")
 
-        # TODO : validation of the input fields
+        # Validation of the input fields
+        if not username:
+            print("Please enter a username")
+            return redirect(url_for("login"))
         
-        # TODO : check if the user exists from database
+        if not password:
+            print("Please enter a password")
+            return redirect(url_for("login"))
         
-        # TODO : log the user in, using its id instead of username
-
+        # Gets user data from the database
+        rows = execute_retrieve("SELECT id, hash FROM user WHERE username = :username", {"username" : username})
+        
+        # TODO : implement password hash functions, and store the password hashes in the table instead of actual hashes
+        
+        # TODO : update usage of passwords to usage of hash of the passwords
+        
+        # Checks if the user exists from database OR password doesn't match [fused for security]
+        if not rows or rows[0]["hash"] != password:
+            print("Enter correct username / password!")
+            return redirect(url_for("login"))
+        
+        # Checks if the existing password doesn't match [removed this separate check for password, see above]
+        # if rows[0]["hash"] != password:
+        #     print("Wrong password!")
+        #     return redirect(url_for("login"))
+        
+        # Logs the user in, using its ID instead of username
+        session["user_id"] = rows[0]["id"]
         return redirect(url_for("index"))
     else:
+        # If user is already logged-in
         if "user_id" in session:
             return redirect(url_for("index"))
         else:
@@ -44,7 +68,7 @@ def login():
 
 @app.route("/logout")
 def logout():
-    session.pop("username", None)
+    session.pop("user_id", None)
     return redirect(url_for("login"))
 
 
