@@ -13,8 +13,8 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 @app.route("/")
 def index():
     # if user logged-in
-    if "username" in session:
-        return render_template("index.html", username=session["username"])
+    if "user_id" in session:
+        return render_template("index.html", user_id=session["user_id"])
     else:
         return redirect(url_for("login"))
 
@@ -28,12 +28,15 @@ def login():
         username = request.form.get("username")
         password = request.form.get("password")
 
-        session["username"] = username
+        # TODO : validation of the input fields
+        
+        # TODO : check if the user exists from database
+        
+        # TODO : log the user in, using its id instead of username
 
         return redirect(url_for("index"))
     else:
-        # if user already logged-in
-        if "username" in session:
+        if "user_id" in session:
             return redirect(url_for("index"))
         else:
             return render_template("login.html")
@@ -49,8 +52,5 @@ def logout():
 def register():
     if request.method == "POST":
         pass
-        
-        # TODO: implement register using db 
-    
     else:
         return render_template("register.html")

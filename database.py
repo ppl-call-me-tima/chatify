@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, exc,text
+from sqlalchemy import create_engine ,text
 
 
 def execute(query):
