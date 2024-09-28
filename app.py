@@ -1,8 +1,12 @@
+import os
+
 from database import execute, execute_retrieve
-from datetime import timedelta
+from datetime import datetime, timedelta
 from flask import Flask, render_template, redirect, request, session, url_for
-from helpers import log_user_in, login_required
+from helpers import allowed_file, log_user_in, login_required
+from markupsafe import escape
 from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 # Permanent Session
@@ -11,7 +15,10 @@ app.permanent_session_lifetime = timedelta(minutes=69)
 # Database
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
+# Uploading Files
+UPLOAD_FOLDER = "static/uploads"
+app.config['MAX_CONTENT_LENGTH'] = 64 * 1000 * 1000  # 64MB
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 @app.route("/")
 @login_required
@@ -111,4 +118,37 @@ def register():
 def profile(username):
     # TODO : implement profile page
     
-    return f"Welcome to your profile {username}"
+    if escape(username) == session["username"]:
+        self_profile = True
+    else:
+        self_profile = False
+    
+    return render_template("profile.html", self_profile=self_profile)
+
+@app.route("/upload_pfp", methods=["POST"])
+@login_required
+def upload_pfp():
+    if request.method == "POST":
+        # Retrieve form data
+        file = request.files.get("upload_pfp")
+        
+        # Empty file submitted
+        if not file:
+            print("Please enter a file!")
+            return redirect(f"profile/{session.get('username')}")
+        
+        # File outside of allowed filetypes
+        if not allowed_file(file.filename):
+            print("Enter correct file type!")
+            return redirect(f"profile/{session.get('username')}")
+            
+        # Save the file
+        
+        # TODO : Generate filename as filename+timestamp and
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = secure_filename(file.filename) + timestamp
+        
+        # TODO : insert filename to db
+        
+        file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+        return redirect(f"profile/{session.get('username')}")

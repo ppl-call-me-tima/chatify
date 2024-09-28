@@ -5,5 +5,15 @@ Profile
 {% endblock %}
 
 {% block main %}
-
+<div class="card" style="display: inline-block">
+    <img src="../static/uploads/default_pfp.jpeg" alt="profile photo" style="height: 500px; width: 500px;">
+    {% if self_profile %}
+    <div class="card-body">
+        <form action="/upload_pfp" enctype="multipart/form-data" method="post">
+            <input class="form-control form-control-lg" name="upload_pfp" type="file">
+            <input class="form-control form-control-lg" type="submit" value="Change Profile Photo">
+        </form>
+    </div>
+    {% endif %}
+</div>
 {% endblock %}
