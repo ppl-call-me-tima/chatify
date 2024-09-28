@@ -1,6 +1,7 @@
-from flask import Flask, render_template, redirect, request, session, url_for
 from database import execute, execute_retrieve
 from datetime import timedelta
+from flask import Flask, render_template, redirect, request, session, url_for
+from helpers import login_required
 from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
@@ -13,12 +14,9 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 
 @app.route("/")
+@login_required
 def index():
-    # If user is logged-in
-    if "user_id" in session:
-        return render_template("index.html", user_id=session["user_id"])
-    else:
-        return redirect(url_for("login"))
+    return render_template("index.html", user_id=session.get("user_id"))
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -58,6 +56,7 @@ def login():
 
 
 @app.route("/logout")
+@login_required
 def logout():
     session.pop("user_id", None)
     return redirect(url_for("login"))
