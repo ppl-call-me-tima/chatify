@@ -8,3 +8,9 @@ def login_required(f):
             return redirect(url_for("login"))
         return f(*args, **kwargs)
     return decorated_function
+
+
+def log_user_in(user_id: int, username: str):
+    session.permanent = True  # For making a session permanent - so that it exists even after the browser is closed
+    session["user_id"] = user_id
+    session["username"] = username

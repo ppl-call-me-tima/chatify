@@ -1,7 +1,7 @@
 from database import execute, execute_retrieve
 from datetime import timedelta
 from flask import Flask, render_template, redirect, request, session, url_for
-from helpers import login_required
+from helpers import log_user_in, login_required
 from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
@@ -16,7 +16,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 @app.route("/")
 @login_required
 def index():
-    return render_template("index.html", user_id=session.get("user_id"))
+    return render_template("index.html", username=session.get("username"))
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -43,9 +43,7 @@ def login():
             print("Enter correct username / password!")
             return redirect(url_for("login"))
         
-        # Logs the user in, using its ID
-        session.permanent = True  # For making a session permanent - so that it exists even after the browser is closed
-        session["user_id"] = rows[0]["id"]
+        log_user_in(rows[0]["id"], username)
         return redirect(url_for("index"))
     else:
         # If user is already logged-in
@@ -59,6 +57,7 @@ def login():
 @login_required
 def logout():
     session.pop("user_id", None)
+    session.pop("username", None)
     return redirect(url_for("login"))
 
 
@@ -101,8 +100,15 @@ def register():
 
         # Log-in the user
         rows = execute_retrieve("SELECT id FROM user WHERE username = :username", {"username":username})
-        session.permanent = True
-        session["user_id"] = rows[0]["id"]
+        log_user_in(rows[0]["id"], username)
         return redirect(url_for("index"))
     else:
         return render_template("register.html")
+    
+
+@app.route("/profile/<username>")
+@login_required
+def profile(username):
+    # TODO : implement profile page
+    
+    return f"Welcome to your profile {username}"
