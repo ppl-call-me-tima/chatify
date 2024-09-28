@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, request, session, url_for
 from database import execute, execute_retrieve
 from datetime import timedelta
+from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
 # Permanent Session
@@ -40,20 +41,11 @@ def login():
         
         # Gets user data from the database
         rows = execute_retrieve("SELECT id, hash FROM user WHERE username = :username", {"username" : username})
-        
-        # TODO : implement password hash functions, and store the password hashes in the table instead of actual hashes
-        
-        # TODO : update usage of passwords to usage of hash of the passwords
-        
+                        
         # Checks if the user exists from database OR password doesn't match [fused for security]
-        if not rows or rows[0]["hash"] != password:
+        if not rows or not check_password_hash(rows[0]["hash"], password):
             print("Enter correct username / password!")
             return redirect(url_for("login"))
-        
-        # Checks if the existing password doesn't match [removed this separate check for password, see above]
-        # if rows[0]["hash"] != password:
-        #     print("Wrong password!")
-        #     return redirect(url_for("login"))
         
         # Logs the user in, using its ID instead of username
         session["user_id"] = rows[0]["id"]
