@@ -2,7 +2,7 @@ import os
 
 from database import execute, execute_retrieve
 from datetime import datetime, timedelta
-from flask import flash, Flask, render_template, redirect, request, session, url_for
+from flask import Flask, render_template, redirect, request, session, url_for
 from helpers import allowed_file, flash_and_redirect, log_user_in, login_required
 from markupsafe import escape
 from werkzeug.security import check_password_hash, generate_password_hash
