@@ -64,12 +64,20 @@
 		</div>
 	</nav>
 
+	{% if get_flashed_messages() %}
+	<header>
+		<div class="alert alert-primary text-center">
+			{{ get_flashed_messages() | join(" ") }}
+		</div>
+	</header>
+	{% endif %}
+
 	<main>
 		{% block main %}{% endblock %}
 	</main>
 
 	<footer>
-		{% block footer %}{% endblock %}
+		
 	</footer>
 </body>
 

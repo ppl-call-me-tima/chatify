@@ -2,8 +2,8 @@ import os
 
 from database import execute, execute_retrieve
 from datetime import datetime, timedelta
-from flask import Flask, render_template, redirect, request, session, url_for
-from helpers import allowed_file, log_user_in, login_required
+from flask import flash, Flask, render_template, redirect, request, session, url_for
+from helpers import allowed_file, flash_and_redirect, log_user_in, login_required
 from markupsafe import escape
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
@@ -29,33 +29,27 @@ def index():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        # Retrieve form data
         username = request.form.get("username")
         password = request.form.get("password")
 
         # Validate form data
         if not username:
-            print("Please enter a username")
-            return redirect(url_for("login"))
+            return flash_and_redirect("Enter name!", "login")
         
         if not password:
-            print("Please enter a password")
-            return redirect(url_for("login"))
+            return flash_and_redirect("Enter password!", "login")
         
-        # Get user data from the database
         rows = execute_retrieve("SELECT id, hash FROM user WHERE username = :username", {"username" : username})
                         
-        # Check if user doesn't exist from db OR password doesn't match [fused for security]
+        # User / password mismatch
         if not rows or not check_password_hash(rows[0]["hash"], password):
-            print("Enter correct username / password!")
-            return redirect(url_for("login"))
+            return flash_and_redirect("Enter correct username / password!", "login")
         
         log_user_in(rows[0]["id"], username)
         return redirect(url_for("index"))
     else:
-        # If user is already logged-in
         if "user_id" in session:
-            return redirect(url_for("index"))
+            return flash_and_redirect("Already logged-in!", "index")
         else:
             return render_template("login.html")
 
@@ -71,36 +65,29 @@ def logout():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":        
-        # Retrieve form data
         username = request.form.get("username")
         password = request.form.get("password")
         confirmation = request.form.get("confirmation")
         
         # Validate form data
         if not username:
-            print("Please enter a username.")
-            return redirect(url_for("register"))
+            return flash_and_redirect("Enter username!", "register")
         
         if not password:
-            print("Please enter a password.")
-            return redirect(url_for("register"))
+            return flash_and_redirect("Enter password!", "register")
         
         if not confirmation:
-            print("Please re-enter password.")
-            return redirect(url_for("register"))
+            return flash_and_redirect("Re-enter password!", "register")
         
+        if password != confirmation:
+            return flash_and_redirect("Passwords don't match!", "register")
+                
         # Check if username already exists
         rows = execute_retrieve("SELECT id FROM user WHERE username = :username", {"username":username})
         
         if rows:
-            print("Username already taken!")
-            return redirect(url_for("register"))
-        
-        # Check password and confirmation not matching
-        if password != confirmation:
-            print("Passwords don't match!")
-            return redirect(url_for("register"))
-        
+            return flash_and_redirect("Username already taken!", "login")
+                
         # Insert data into table
         execute("INSERT INTO user (username, hash) VALUES (:username, :hash)", 
                 {"username":username, "hash":generate_password_hash(password)})
@@ -108,7 +95,8 @@ def register():
         # Log-in the user
         rows = execute_retrieve("SELECT id FROM user WHERE username = :username", {"username":username})
         log_user_in(rows[0]["id"], username)
-        return redirect(url_for("index"))
+        
+        return flash_and_redirect("Successfully Registered and Logged-In!", "index")
     else:
         return render_template("register.html")
     
@@ -128,7 +116,7 @@ def profile(username):
     rows = execute_retrieve("SELECT pfp_filename FROM user WHERE username = :username", 
                             {"username": username})
     
-    # pfp_filename == NULL
+    # user.pfp_filename == NULL
     if not rows[0]["pfp_filename"]:
         filepath = "static/default_pfp.jpeg"
     else:
@@ -147,7 +135,9 @@ def remove_pfp():
     rows = execute_retrieve("SELECT pfp_filename FROM user WHERE id = :user_id", 
                                 {"user_id": session["user_id"]})
     
-    if rows[0]["pfp_filename"]:
+    if not rows[0]["pfp_filename"]:
+        return flash_and_redirect("PFP already default!", "profile", username=session.get("username"))
+    else:
         # Remove file from filesystem
         existing_pfp_filename = rows[0]["pfp_filename"]
         existing_pfp_filepath = os.path.join(app.config["UPLOAD_FOLDER"], existing_pfp_filename)
@@ -157,34 +147,27 @@ def remove_pfp():
         execute("UPDATE user SET pfp_filename = NULL WHERE id = :user_id", {
             "user_id": session["user_id"]})
         
-    return redirect(f"/profile/{session['username']}")
+        return redirect(url_for("profile", username=session.get("username")))        
+
 
 @app.route("/upload_pfp", methods=["POST"])
 @login_required
 def upload_pfp():
     if request.method == "POST":
-        # Retrieve form data
         file = request.files.get("upload_pfp")
         
-        # Empty file submitted
+        # Validation
         if not file:
-            print("Please enter a file!")
-            return redirect(f"/profile/{session.get('username')}")
+            return flash_and_redirect("Choose a file!", "profile", username=session.get("username"))
         
-        # File outside of allowed filetypes
         if not allowed_file(file.filename):
-            print("Enter correct file type!")
-            return redirect(f"/profile/{session.get('username')}")
+            return flash_and_redirect("Choose correct file type!", "profile", username=session.get("username"))
             
-        # File name too large
         if len(file.filename) > 50:
-            print("File name should be less than 50 characters! GEEZ!")
-            return redirect(f"/profile/{session.get('username')}")
+            return flash_and_redirect("File name should be less than 50 characters! GEEZ!", "profile", username=session.get("username"))        
         
-        # Escaping and security stuff
+        # Generate secure filename as filename+timestamp and
         filename = secure_filename(file.filename)
-        
-        # Generate filename as filename+timestamp and
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S%f")
         name, ext = os.path.splitext(filename)
         filename = f"{name}_{timestamp}{ext}"
@@ -205,4 +188,4 @@ def upload_pfp():
         # Save file to filesystem
         file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
         
-        return redirect(f"/profile/{session.get('username')}")
+        return redirect(url_for("profile", username=session.get("username")))

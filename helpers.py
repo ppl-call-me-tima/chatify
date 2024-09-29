@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import redirect, session, url_for
+from flask import flash, redirect, session, url_for
 
 # Uploading files
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -7,6 +7,11 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def flash_and_redirect(msg: str, func: str, **kwargs):
+    flash(msg)
+    return redirect(url_for(func, **kwargs))
 
 
 def login_required(f):
