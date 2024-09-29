@@ -6,12 +6,15 @@ Profile
 
 {% block main %}
 <div class="card" style="display: inline-block">
-    <img src="../static/uploads/default_pfp.jpeg" alt="profile photo" style="height: 500px; width: 500px;">
+    <img src="{{ filepath }}" alt="profile photo" style="height: 450px; width: 450px;">
     {% if self_profile %}
     <div class="card-body">
         <form action="/upload_pfp" enctype="multipart/form-data" method="post">
             <input class="form-control form-control-lg" name="upload_pfp" type="file">
             <input class="form-control form-control-lg" type="submit" value="Change Profile Photo">
+        </form>
+        <form action="/remove_pfp">
+            <input class="form-control form-control-lg" type="submit" value="Remove">
         </form>
     </div>
     {% endif %}

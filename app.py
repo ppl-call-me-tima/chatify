@@ -17,7 +17,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 # Uploading Files
 UPLOAD_FOLDER = "static/uploads"
-app.config['MAX_CONTENT_LENGTH'] = 64 * 1000 * 1000  # 64MB
+app.config["MAX_CONTENT_LENGTH"] = 64 * 1000 * 1000  # 64MB
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 @app.route("/")
@@ -118,12 +118,46 @@ def register():
 def profile(username):
     # TODO : implement profile page
     
-    if escape(username) == session["username"]:
+    username = str(escape(username))
+    
+    if username == session["username"]:
         self_profile = True
     else:
         self_profile = False
     
-    return render_template("profile.html", self_profile=self_profile)
+    rows = execute_retrieve("SELECT pfp_filename FROM user WHERE username = :username", 
+                            {"username": username})
+    
+    # pfp_filename == NULL
+    if not rows[0]["pfp_filename"]:
+        filepath = "static/default_pfp.jpeg"
+    else:
+        filepath = os.path.join(app.config["UPLOAD_FOLDER"], rows[0]["pfp_filename"])
+    
+    # Relative path of template files to static directory
+    filepath = "../" + filepath
+    
+    return render_template("profile.html", filepath=filepath, self_profile=self_profile)
+
+
+@app.route("/remove_pfp")
+@login_required
+def remove_pfp():
+    # Retrieve filename from db
+    rows = execute_retrieve("SELECT pfp_filename FROM user WHERE id = :user_id", 
+                                {"user_id": session["user_id"]})
+    
+    if rows[0]["pfp_filename"]:
+        # Remove file from filesystem
+        existing_pfp_filename = rows[0]["pfp_filename"]
+        existing_pfp_filepath = os.path.join(app.config["UPLOAD_FOLDER"], existing_pfp_filename)
+        os.remove(existing_pfp_filepath)
+    
+        # Remove filename from db
+        execute("UPDATE user SET pfp_filename = NULL WHERE id = :user_id", {
+            "user_id": session["user_id"]})
+        
+    return redirect(f"/profile/{session['username']}")
 
 @app.route("/upload_pfp", methods=["POST"])
 @login_required
@@ -135,20 +169,40 @@ def upload_pfp():
         # Empty file submitted
         if not file:
             print("Please enter a file!")
-            return redirect(f"profile/{session.get('username')}")
+            return redirect(f"/profile/{session.get('username')}")
         
         # File outside of allowed filetypes
         if not allowed_file(file.filename):
             print("Enter correct file type!")
-            return redirect(f"profile/{session.get('username')}")
+            return redirect(f"/profile/{session.get('username')}")
             
-        # Save the file
+        # File name too large
+        if len(file.filename) > 50:
+            print("File name should be less than 50 characters! GEEZ!")
+            return redirect(f"/profile/{session.get('username')}")
         
-        # TODO : Generate filename as filename+timestamp and
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = secure_filename(file.filename) + timestamp
+        # Escaping and security stuff
+        filename = secure_filename(file.filename)
         
-        # TODO : insert filename to db
+        # Generate filename as filename+timestamp and
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S%f")
+        name, ext = os.path.splitext(filename)
+        filename = f"{name}_{timestamp}{ext}"
         
+        # Remove older file if exists
+        rows = execute_retrieve("SELECT pfp_filename FROM user WHERE id = :user_id", 
+                                {"user_id": session["user_id"]})
+        
+        if rows[0]["pfp_filename"]:
+            existing_pfp_filename = rows[0]["pfp_filename"]
+            existing_pfp_filepath = os.path.join(app.config["UPLOAD_FOLDER"], existing_pfp_filename)
+            os.remove(existing_pfp_filepath)
+        
+        # Insert filename into db
+        execute("UPDATE user SET pfp_filename = :filename WHERE id = :user_id", 
+                {"filename": filename, "user_id": session["user_id"]})
+        
+        # Save file to filesystem
         file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
-        return redirect(f"profile/{session.get('username')}")
+        
+        return redirect(f"/profile/{session.get('username')}")
