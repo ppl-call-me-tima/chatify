@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Send Friend Requests
+{% endblock %}
+
+{% block main %}
+<div class="card mx-auto my-5" style="height: 50vh; width: 70vh;">
+    <form class="d-flex flex-column align-items-center my-auto" action="/friends/sendfriendrequests" method="post">
+        <input autofocus class="form-control form-control-lg w-75 my-4" type="text" placeholder="Username" name="username">
+        <button class="btn btn-primary btn-lg" type="submit">Send Friend Request</button>
+    </form>
+</div>
+{% endblock %}
