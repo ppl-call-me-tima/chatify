@@ -2,7 +2,7 @@ import os
 
 from database import execute, execute_retrieve
 from datetime import datetime, timedelta
-from flask import Flask, render_template, redirect, request, session, url_for
+from flask import Flask, flash, render_template, redirect, request, session, url_for
 from flask_socketio import SocketIO
 from helpers import allowed_file, flash_and_redirect, log_user_in, login_required
 from markupsafe import escape
@@ -26,6 +26,71 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 @login_required
 def index():
     return render_template("index.html", username=session.get("username"))
+
+
+@app.route("/friends/myfriends")
+@login_required
+def myfriends():
+    return render_template("myfriends.html")
+
+
+@app.route("/friends/friendrequests")
+@login_required
+def friendrequests():
+    rows = execute_retrieve("SELECT id, req_from FROM friend_requests WHERE req_to = :to", 
+                            {"to": session.get("username")})
+    
+    return render_template("friendrequests.html", rows=rows)
+
+
+@app.route("/friends/friendrequests/reject", methods=["POST"])
+@login_required
+def rejectfriendrequest():
+    if request.method == "POST":
+        id = request.form.get("id")
+        execute("DELETE FROM friend_requests WHERE id = :id", {"id": id})
+        return flash_and_redirect("Friend request rejected!", "friendrequests")
+    
+
+@app.route("/friends/friendrequests/accept", methods=["POST"])
+@login_required
+def acceptfriendrequest():
+    if request.method == "POST":
+        id = request.form.get("id")
+        # TODO : accept the friend request
+        return flash_and_redirect("Friend request accepted!", "friendrequests")
+
+
+@app.route("/friends/sendfriendrequests", methods=["GET", "POST"])
+@login_required
+def sendfriendrequests():
+    if request.method == "POST":
+        username = request.form.get("username")
+        
+        if not username:
+            return flash_and_redirect("Enter username!", "sendfriendrequests")
+        
+        if username == session["username"]:
+            return flash_and_redirect("Cannot send friend request to yourself!", "sendfriendrequests")
+        
+        rows = execute_retrieve("SELECT id FROM user WHERE username = :username", 
+                                {"username": username})
+        
+        if not rows:
+            return flash_and_redirect("No such user found!", "sendfriendrequests")
+        
+        rows = execute_retrieve("SELECT id FROM friend_requests WHERE req_from = :from AND req_to = :to", 
+                                {"from": session.get("username"), "to": username})
+        
+        if rows:
+            return flash_and_redirect("Friend request already sent!", "sendfriendrequests")
+        
+        execute("INSERT INTO friend_requests (req_from, req_to) VALUES (:from, :to)", 
+                {"from": session.get("username"), "to": username})
+        
+        return flash_and_redirect("Friend request sent!", "sendfriendrequests")
+    else:
+        return render_template("sendfriendrequests.html")
 
 
 @app.route("/login", methods=["GET", "POST"])
