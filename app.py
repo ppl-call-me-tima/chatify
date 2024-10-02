@@ -70,7 +70,7 @@ def sendfriendrequests():
         if not username:
             return flash_and_redirect("Enter username!", "sendfriendrequests")
         
-        if username == session["username"]:
+        if username == session.get("username"):
             return flash_and_redirect("Cannot send friend request to yourself!", "sendfriendrequests")
         
         rows = execute_retrieve("SELECT id FROM user WHERE username = :username", 
@@ -175,7 +175,7 @@ def profile(username):
     
     username = str(escape(username))
     
-    if username == session["username"]:
+    if username == session.get("username"):
         self_profile = True
     else:
         self_profile = False
@@ -200,7 +200,7 @@ def profile(username):
 def remove_pfp():
     # Retrieve filename from db
     rows = execute_retrieve("SELECT pfp_filename FROM user WHERE id = :user_id", 
-                                {"user_id": session["user_id"]})
+                                {"user_id": session.get("user_id")})
     
     if not rows[0]["pfp_filename"]:
         return flash_and_redirect("PFP already default!", "profile", username=session.get("username"))
@@ -212,7 +212,7 @@ def remove_pfp():
     
         # Remove filename from db
         execute("UPDATE user SET pfp_filename = NULL WHERE id = :user_id", {
-            "user_id": session["user_id"]})
+            "user_id": session.get("user_id")})
         
         return redirect(url_for("profile", username=session.get("username")))        
 
@@ -241,7 +241,7 @@ def upload_pfp():
         
         # Remove older file if exists
         rows = execute_retrieve("SELECT pfp_filename FROM user WHERE id = :user_id", 
-                                {"user_id": session["user_id"]})
+                                {"user_id": session.get("user_id")})
         
         if rows[0]["pfp_filename"]:
             existing_pfp_filename = rows[0]["pfp_filename"]
@@ -250,7 +250,7 @@ def upload_pfp():
         
         # Insert filename into db
         execute("UPDATE user SET pfp_filename = :filename WHERE id = :user_id", 
-                {"filename": filename, "user_id": session["user_id"]})
+                {"filename": filename, "user_id": session.get("user_id")})
         
         # Save file to filesystem
         file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
