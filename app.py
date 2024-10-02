@@ -37,8 +37,12 @@ def myfriends():
 @app.route("/friends/friendrequests")
 @login_required
 def friendrequests():
-    rows = execute_retrieve("SELECT id, req_from FROM friend_requests WHERE req_to = :to", 
-                            {"to": session.get("username")})
+    rows = execute_retrieve("""
+        SELECT friend_requests.id, user.username 
+        FROM friend_requests, user
+        WHERE friend_requests.req_to = :to
+        AND friend_requests.req_from = user.id;
+    """, {"to": session.get("user_id")})
     
     return render_template("friendrequests.html", rows=rows)
 
@@ -79,14 +83,16 @@ def sendfriendrequests():
         if not rows:
             return flash_and_redirect("No such user found!", "sendfriendrequests")
         
+        to_friend_id = rows[0]["id"]
+        
         rows = execute_retrieve("SELECT id FROM friend_requests WHERE req_from = :from AND req_to = :to", 
-                                {"from": session.get("username"), "to": username})
+                                {"from": session.get("user_id"), "to": to_friend_id})
         
         if rows:
             return flash_and_redirect("Friend request already sent!", "sendfriendrequests")
         
         execute("INSERT INTO friend_requests (req_from, req_to) VALUES (:from, :to)", 
-                {"from": session.get("username"), "to": username})
+                {"from": session.get("user_id"), "to": to_friend_id})
         
         return flash_and_redirect("Friend request sent!", "sendfriendrequests")
     else:

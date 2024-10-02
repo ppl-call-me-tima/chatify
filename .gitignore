@@ -163,3 +163,5 @@ cython_debug/
 
 # Uploaded files on the filesystem
 static/uploads/*
+# MySQL queries from workbench
+mysql_queries/
