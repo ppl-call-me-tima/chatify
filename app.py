@@ -1,4 +1,4 @@
-import os
+import os.path
 
 from database import execute, execute_retrieve
 from datetime import datetime, timedelta
@@ -31,14 +31,24 @@ def index():
 @app.route("/friends/myfriends")
 @login_required
 def myfriends():
-    return render_template("myfriends.html")
+    rows = execute_retrieve("""
+        SELECT
+            CASE 
+                WHEN low_friend_id = :user_id THEN high_friend_id
+                ELSE low_friend_id
+            END AS friend_id
+        FROM friendships 
+        WHERE low_friend_id = :user_id OR high_friend_id = :user_id
+    """, {"user_id": session.get("user_id")})
+    
+    return render_template("myfriends.html", rows=rows)
 
 
 @app.route("/friends/friendrequests")
 @login_required
 def friendrequests():
     rows = execute_retrieve("""
-        SELECT friend_requests.id, user.username 
+        SELECT friend_requests.id AS req_id, user.id AS user_id, user.username 
         FROM friend_requests, user
         WHERE friend_requests.req_to = :to
         AND friend_requests.req_from = user.id;
@@ -51,7 +61,7 @@ def friendrequests():
 @login_required
 def rejectfriendrequest():
     if request.method == "POST":
-        id = request.form.get("id")
+        id = request.form.get("req_id")
         execute("DELETE FROM friend_requests WHERE id = :id", {"id": id})
         return flash_and_redirect("Friend request rejected!", "friendrequests")
     
@@ -60,8 +70,17 @@ def rejectfriendrequest():
 @login_required
 def acceptfriendrequest():
     if request.method == "POST":
-        id = request.form.get("id")
+        req_id = int(request.form.get("req_id"))
+        user_id = int(request.form.get("user_id"))
         # TODO : accept the friend request
+        
+        low_friend_id, high_friend_id = sorted([session.get("user_id"), user_id])
+        
+        execute("INSERT INTO friendships (low_friend_id, high_friend_id) VALUES (:low_friend_id, :high_friend_id)",
+                {"low_friend_id": low_friend_id, "high_friend_id": high_friend_id})
+        
+        execute("DELETE FROM friend_requests WHERE id = :id", {"id": req_id})
+        
         return flash_and_redirect("Friend request accepted!", "friendrequests")
 
 

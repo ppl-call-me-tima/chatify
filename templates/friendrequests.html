@@ -5,6 +5,7 @@ Friend Requests
 {% endblock %}
 
 {% block main %}
+{{rows}}
 <div class="d-flex mx-auto my-5" style="height: auto; width: 50vw">
     <div style="height:40vh ;width: 50vw; overflow-y: scroll;">
         {% for row in rows %}
@@ -15,13 +16,14 @@ Friend Requests
                 </div>
                 <div class="col">
                     <form action="/friends/friendrequests/reject" method="post">
-                        <input type="hidden" name="id" value="{{ row.id }}">
+                        <input type="hidden" name="req_id" value="{{ row.req_id }}">
                         <input type="submit" class="btn btn-danger" value="Reject">
                     </form>
                 </div>
                 <div class="col">
                     <form action="/friends/friendrequests/accept" method="post">
-                        <input type="hidden" name="id" value="{{ row.id }}">
+                        <input type="hidden" name="req_id" value="{{ row.req_id }}">
+                        <input type="hidden" name="user_id" value="{{ row.user_id }}">
                         <input type="submit" class="btn btn-success" value="Accept">
                     </form>
                 </div>
