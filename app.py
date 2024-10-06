@@ -25,12 +25,17 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 @app.route("/")
 @login_required
 def index():
+    # TODO: Implement home page
+    
     return render_template("index.html", username=session.get("username"))
 
 
 @app.route("/friends/myfriends")
 @login_required
 def myfriends():
+    
+    # TODO: Move query to helper function
+    
     rows = execute_retrieve("""
         SELECT f.id AS friendship_id, f.friend_id, user.username
         FROM
@@ -54,7 +59,7 @@ def myfriends():
 def remove():
     friendship_id = request.form.get("friendship_id")
     
-    # TODO: Validate whether the session user is a part of that friendship id #NeverTrustUserInput
+    # TODO: Validate whether the session user is a part of that friendship-id  #NeverTrustUserInput
     
     execute("DELETE FROM friendships WHERE id = :friendship_id", {"friendship_id": friendship_id})
     
@@ -64,6 +69,9 @@ def remove():
 @app.route("/friends/friendrequests")
 @login_required
 def friendrequests():
+    
+    # TODO: Move query to helper function
+    
     rows = execute_retrieve("""
         SELECT friend_requests.id AS req_id, user.id AS user_id, user.username 
         FROM friend_requests, user
@@ -79,6 +87,9 @@ def friendrequests():
 def rejectfriendrequest():
     if request.method == "POST":
         id = request.form.get("req_id")
+        
+        # TODO: Validate whether the session user is a part of the request-id  #NeverTrustUserInput
+        
         execute("DELETE FROM friend_requests WHERE id = :id", {"id": id})
         return flash_and_redirect("Friend request rejected!", "friendrequests")
     
@@ -89,6 +100,8 @@ def acceptfriendrequest():
     if request.method == "POST":
         req_id = int(request.form.get("req_id"))
         user_id = int(request.form.get("user_id"))
+        
+        # TODO: Validate whether that friend-request exists or not  #NeverTrustUserInput
         
         low_friend_id, high_friend_id = sorted([session.get("user_id"), user_id])
         
@@ -106,6 +119,7 @@ def sendfriendrequests():
     if request.method == "POST":
         username = request.form.get("username")
         
+        # Validate input
         if not username:
             return flash_and_redirect("Enter username!", "sendfriendrequests")
         
