@@ -161,7 +161,9 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-# Uploaded files on the filesystem
-static/uploads/*
 # MySQL queries from workbench
 mysql_queries/
+# Uploaded files on the filesystem
+static/uploads/*
+# TODO-stuff
+todo.txt

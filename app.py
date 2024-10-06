@@ -2,7 +2,7 @@ import os.path
 
 from database import execute, execute_retrieve
 from datetime import datetime, timedelta
-from flask import Flask, flash, render_template, redirect, request, session, url_for
+from flask import Flask, render_template, redirect, request, session, url_for
 from flask_socketio import SocketIO
 from helpers import allowed_file, flash_and_redirect, log_user_in, login_required
 from markupsafe import escape
@@ -32,16 +32,33 @@ def index():
 @login_required
 def myfriends():
     rows = execute_retrieve("""
-        SELECT
-            CASE 
-                WHEN low_friend_id = :user_id THEN high_friend_id
-                ELSE low_friend_id
-            END AS friend_id
-        FROM friendships 
-        WHERE low_friend_id = :user_id OR high_friend_id = :user_id
+        SELECT f.id AS friendship_id, f.friend_id, user.username
+        FROM
+        (
+            SELECT friendships.id,
+                CASE
+                    WHEN low_friend_id = :user_id THEN high_friend_id
+                    ELSE low_friend_id
+                END AS friend_id
+            FROM friendships
+            WHERE low_friend_id = :user_id OR high_friend_id = :user_id
+        ) AS f
+        JOIN user ON user.id = f.friend_id
     """, {"user_id": session.get("user_id")})
     
     return render_template("myfriends.html", rows=rows)
+
+
+@app.route("/friends/myfriends/remove", methods=["POST"])
+@login_required
+def remove():
+    friendship_id = request.form.get("friendship_id")
+    
+    # TODO: Validate whether the session user is a part of that friendship id #NeverTrustUserInput
+    
+    execute("DELETE FROM friendships WHERE id = :friendship_id", {"friendship_id": friendship_id})
+    
+    return flash_and_redirect("Friend Removed!", "myfriends")
 
 
 @app.route("/friends/friendrequests")
@@ -72,7 +89,6 @@ def acceptfriendrequest():
     if request.method == "POST":
         req_id = int(request.form.get("req_id"))
         user_id = int(request.form.get("user_id"))
-        # TODO : accept the friend request
         
         low_friend_id, high_friend_id = sorted([session.get("user_id"), user_id])
         
@@ -109,6 +125,14 @@ def sendfriendrequests():
         
         if rows:
             return flash_and_redirect("Friend request already sent!", "sendfriendrequests")
+        
+        low_friend_id, high_friend_id = sorted([session.get("user_id"), to_friend_id])
+        
+        rows = execute_retrieve("SELECT id FROM friendships WHERE low_friend_id = :low AND high_friend_id = :high",
+                                {"low": low_friend_id, "high": high_friend_id})
+        
+        if rows:
+            return flash_and_redirect("They're already your friend!", "sendfriendrequests")
         
         execute("INSERT INTO friend_requests (req_from, req_to) VALUES (:from, :to)", 
                 {"from": session.get("user_id"), "to": to_friend_id})

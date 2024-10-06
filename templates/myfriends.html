@@ -5,5 +5,24 @@ My Friends
 {% endblock %}
 
 {% block main %}
-{{rows}}
+<div class="d-flex mx-auto my-5" style="height: auto; width: 50vw">
+    <div style="height:40vh ;width: 50vw; overflow-y: scroll;">
+        {% for row in rows %}
+        <div class="card mx-5 my-1 px-3 py-3">
+            <div class="row">
+                <div class="col-10">
+                    <h4><a class="link-offset-2-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover text-dark"
+                            href="/profile/{{ row.username }}">{{ row.username }}</a></h4>
+                </div>
+                <div class="col">
+                    <form action="/friends/myfriends/remove" method="post">
+                        <input type="hidden" name="friendship_id" value="{{ row.friendship_id }}">
+                        <button class="btn btn-danger" type="submit">Remove</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}
