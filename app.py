@@ -37,7 +37,7 @@ def myfriends():
     # TODO: Move query to helper function
     
     rows = execute_retrieve("""
-        SELECT f.id AS friendship_id, f.friend_id, user.username
+        SELECT f.id AS friendship_id, f.friend_id, user.username, user.pfp_filename
         FROM
         (
             SELECT friendships.id,
@@ -246,11 +246,7 @@ def profile(username):
     rows = execute_retrieve("SELECT pfp_filename FROM user WHERE username = :username", 
                             {"username": username})
     
-    # user.pfp_filename == NULL
-    if not rows[0]["pfp_filename"]:
-        filepath = "static/default_pfp.jpeg"
-    else:
-        filepath = os.path.join(app.config["UPLOAD_FOLDER"], rows[0]["pfp_filename"])
+    filepath = os.path.join(app.config["UPLOAD_FOLDER"], rows[0]["pfp_filename"])
     
     # Relative path of template files to static directory
     filepath = "../" + filepath
@@ -265,7 +261,7 @@ def remove_pfp():
     rows = execute_retrieve("SELECT pfp_filename FROM user WHERE id = :user_id", 
                                 {"user_id": session.get("user_id")})
     
-    if not rows[0]["pfp_filename"]:
+    if rows[0]["pfp_filename"] == "default_pfp.jpeg":
         return flash_and_redirect("PFP already default!", "profile", username=session.get("username"))
     else:
         # Remove file from filesystem
@@ -306,7 +302,7 @@ def upload_pfp():
         rows = execute_retrieve("SELECT pfp_filename FROM user WHERE id = :user_id", 
                                 {"user_id": session.get("user_id")})
         
-        if rows[0]["pfp_filename"]:
+        if rows[0]["pfp_filename"] and rows[0]["pfp_filename"] != "default_pfp.jpeg":
             existing_pfp_filename = rows[0]["pfp_filename"]
             existing_pfp_filepath = os.path.join(app.config["UPLOAD_FOLDER"], existing_pfp_filename)
             os.remove(existing_pfp_filepath)

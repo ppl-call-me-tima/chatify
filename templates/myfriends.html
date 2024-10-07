@@ -10,7 +10,10 @@ My Friends
         {% for row in rows %}
         <div class="card mx-5 my-1 px-3 py-3">
             <div class="row">
-                <div class="col-10">
+                <div class="col-1">
+                    <img src="../static/uploads/{{ row.pfp_filename }}" alt="pfp" height="40px" style="border-radius: 15px;">
+                </div>
+                <div class="col-9">
                     <h4><a class="link-offset-2-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover text-dark"
                             href="/profile/{{ row.username }}">{{ row.username }}</a></h4>
                 </div>
