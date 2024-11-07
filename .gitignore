@@ -167,3 +167,5 @@ mysql_queries/
 static/uploads/*
 # TODO-stuff
 todo.txt
+# CA certificate
+isrgrootx1.pem

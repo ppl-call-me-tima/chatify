@@ -2,4 +2,5 @@ cryptography
 flask
 gunicorn
 pymysql
+python-dotenv
 sqlalchemy

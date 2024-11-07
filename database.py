@@ -1,13 +1,25 @@
+import os
+
+from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
 
 # Creating engine
-username = "root"
-password = "rescueforce"
-host = "127.0.0.1"
-dbname = "chatter"
-option = "charset=utf8mb4"
+# username = "root"
+# password = "rescueforce"
+# host = "127.0.0.1"
+# dbname = "chatter"
+# option = "charset=utf8mb4"
 
-connect_string = f"mysql+pymysql://{username}:{password}@{host}/{dbname}?{option}"
+# connect_string = f"mysql+pymysql://{username}:{password}@{host}/{dbname}?{option}"
+
+# SQLAlchemy + PyMySQL Connection from TiDB 
+load_dotenv()
+password = str(os.getenv("password"))
+# password = "YCDv0tjov1jcAF7C"
+CA_PATH = r"/etc/secrets/isrgrootx1.pem"
+
+connect_string = f"mysql+pymysql://39HVxerRsFMaxdU.root:{password}@gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/chatify?ssl_ca={CA_PATH}&ssl_verify_cert=true&ssl_verify_identity=true"
+
 engine = create_engine(connect_string)
 
 
