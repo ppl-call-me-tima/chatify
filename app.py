@@ -3,14 +3,12 @@ import os.path
 from database import execute, execute_retrieve
 from datetime import datetime, timedelta
 from flask import Flask, render_template, redirect, request, session, url_for
-from flask_socketio import SocketIO
 from helpers import allowed_file, flash_and_redirect, log_user_in, login_required
 from markupsafe import escape
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-socketio = SocketIO(app)
 # Permanent Session
 app.secret_key = "stfu"
 app.permanent_session_lifetime = timedelta(minutes=69)
@@ -315,7 +313,3 @@ def upload_pfp():
         file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
         
         return redirect(url_for("profile", username=session.get("username")))
-
-
-if __name__ == "__main__":
-    socketio.run(app, debug=True)
