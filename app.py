@@ -269,8 +269,8 @@ def remove_pfp():
         existing_pfp_filepath = os.path.join(app.config["UPLOAD_FOLDER"], existing_pfp_filename)
         os.remove(existing_pfp_filepath)
     
-        # Remove filename from db
-        execute("UPDATE user SET pfp_filename = NULL WHERE id = :user_id", {
+        # Set filename to default_pfp in db
+        execute("UPDATE user SET pfp_filename = 'default_pfp.jpeg' WHERE id = :user_id", {
             "user_id": session.get("user_id")})
         
         return redirect(url_for("profile", username=session.get("username")))        
