@@ -15,7 +15,6 @@ from sqlalchemy import create_engine, text
 # SQLAlchemy + PyMySQL Connection from TiDB 
 load_dotenv()
 password = str(os.getenv("password"))
-# password = "YCDv0tjov1jcAF7C"
 CA_PATH = r"/etc/secrets/isrgrootx1.pem"
 
 connect_string = f"mysql+pymysql://39HVxerRsFMaxdU.root:{password}@gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/chatify?ssl_ca={CA_PATH}&ssl_verify_cert=true&ssl_verify_identity=true"
