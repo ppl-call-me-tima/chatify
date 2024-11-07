@@ -73,7 +73,7 @@ def friendrequests():
     # TODO: Move query to helper function
     
     rows = execute_retrieve("""
-        SELECT friend_requests.id AS req_id, user.id AS user_id, user.username 
+        SELECT friend_requests.id AS req_id, user.id AS user_id, user.username, user.pfp_filename
         FROM friend_requests, user
         WHERE friend_requests.req_to = :to
         AND friend_requests.req_from = user.id;

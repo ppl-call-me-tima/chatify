@@ -7,28 +7,36 @@ Friend Requests
 {% block main %}
 <div class="d-flex mx-auto my-5" style="height: auto; width: 50vw">
     <div style="height:40vh ;width: 50vw; overflow-y: scroll;">
-        {% for row in rows %}
-        <div class="card mx-5 my-1 px-3 py-3">
-            <div class="row">
-                <div class="col-8">
-                    <h4>{{ row.username }}</h4>
-                </div>
-                <div class="col">
-                    <form action="/friends/friendrequests/reject" method="post">
-                        <input type="hidden" name="req_id" value="{{ row.req_id }}">
-                        <input type="submit" class="btn btn-danger" value="Reject">
-                    </form>
-                </div>
-                <div class="col">
-                    <form action="/friends/friendrequests/accept" method="post">
-                        <input type="hidden" name="req_id" value="{{ row.req_id }}">
-                        <input type="hidden" name="user_id" value="{{ row.user_id }}">
-                        <input type="submit" class="btn btn-success" value="Accept">
-                    </form>
+        {% if rows|length == 0 %}
+        You have no pending friend requests
+        {% else %}
+            {% for row in rows %}
+            <div class="card mx-5 my-1 px-3 py-3">
+                <div class="row">
+                    <div class="col-1">
+                        <img src="../static/uploads/{{ row.pfp_filename }}" alt="pfp" height="40px" style="border-radius: 15px;">
+                    </div>
+                    <div class="col-7">
+                        <h4><a class="link-offset-2-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover text-dark"
+                            href="/profile/{{ row.username }}">{{ row.username }}</a></h4>
+                    </div>
+                    <div class="col-2">
+                        <form action="/friends/friendrequests/reject" method="post">
+                            <input type="hidden" name="req_id" value="{{ row.req_id }}">
+                            <input type="submit" class="btn btn-danger" value="Reject">
+                        </form>
+                    </div>
+                    <div class="col">
+                        <form action="/friends/friendrequests/accept" method="post">
+                            <input type="hidden" name="req_id" value="{{ row.req_id }}">
+                            <input type="hidden" name="user_id" value="{{ row.user_id }}">
+                            <input type="submit" class="btn btn-success" value="Accept">
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
-        {% endfor %}
+            {% endfor %}
+        {% endif %}
     </div>
 </div>
 {% endblock %}
