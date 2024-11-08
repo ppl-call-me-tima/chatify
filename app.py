@@ -77,7 +77,7 @@ def friendrequests():
     # TODO: Move query to helper function
     
     rows = execute_retrieve("""
-        SELECT friend_requests.id AS req_id, user.id AS user_id, user.username, user.pfp_filename
+        SELECT friend_requests.id AS req_id, user.username, user.pfp_filename
         FROM friend_requests, user
         WHERE friend_requests.req_to = :to
         AND friend_requests.req_from = user.id;
@@ -106,11 +106,17 @@ def rejectfriendrequest():
 def acceptfriendrequest():
     if request.method == "POST":
         req_id = int(request.form.get("req_id"))
-        user_id = int(request.form.get("user_id"))
         
         # TODO: Validate whether that friend-request exists or not  #NeverTrustUserInput
+        rows = execute_retrieve("SELECT req_from, req_to FROM friend_requests WHERE id = :req_id", 
+                                {"req_id": req_id})
         
-        low_friend_id, high_friend_id = sorted([session.get("user_id"), user_id])
+        print(rows)
+        
+        if rows[0]["req_to"] != session.get("user_id"):
+            return flash_and_redirect("This friend request can't be accepted.", "friendrequests")
+        
+        low_friend_id, high_friend_id = sorted([rows[0]["req_from"], session.get("user_id")])
         
         execute("INSERT INTO friendships (low_friend_id, high_friend_id) VALUES (:low_friend_id, :high_friend_id)",
                 {"low_friend_id": low_friend_id, "high_friend_id": high_friend_id})

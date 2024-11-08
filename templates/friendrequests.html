@@ -29,7 +29,6 @@ Friend Requests
                     <div class="col">
                         <form action="/friends/friendrequests/accept" method="post">
                             <input type="hidden" name="req_id" value="{{ row.req_id }}">
-                            <input type="hidden" name="user_id" value="{{ row.user_id }}">
                             <input type="submit" class="btn btn-success" value="Accept">
                         </form>
                     </div>
