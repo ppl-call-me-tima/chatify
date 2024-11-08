@@ -63,7 +63,7 @@ def remove():
     ids = [rows[0]["low_friend_id"], rows[0]["high_friend_id"]]
     
     if session["user_id"] not in ids:
-        return flash_and_redirect("Friendship deletion not allowed.", "myfriends")
+        return flash_and_redirect("Friendship removal not allowed.", "myfriends")
         
     execute("DELETE FROM friendships WHERE id = :friendship_id", {"friendship_id": friendship_id})  
     
@@ -90,11 +90,14 @@ def friendrequests():
 @login_required
 def rejectfriendrequest():
     if request.method == "POST":
-        id = request.form.get("req_id")
+        req_id = request.form.get("req_id")
         
-        # TODO: Validate whether the session user is a part of the request-id  #NeverTrustUserInput
+        rows = execute_retrieve("SELECT req_to FROM friend_requests WHERE id = :id", {"id": req_id})
         
-        execute("DELETE FROM friend_requests WHERE id = :id", {"id": id})
+        if rows[0]["req_to"] != session["user_id"]:
+            return flash_and_redirect("This rejection is not possible.")
+        
+        execute("DELETE FROM friend_requests WHERE id = :id", {"id": req_id})
         return flash_and_redirect("Friend request rejected!", "friendrequests")
     
 
