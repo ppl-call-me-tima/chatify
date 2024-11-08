@@ -107,12 +107,9 @@ def acceptfriendrequest():
     if request.method == "POST":
         req_id = int(request.form.get("req_id"))
         
-        # TODO: Validate whether that friend-request exists or not  #NeverTrustUserInput
         rows = execute_retrieve("SELECT req_from, req_to FROM friend_requests WHERE id = :req_id", 
                                 {"req_id": req_id})
-        
-        print(rows)
-        
+                
         if rows[0]["req_to"] != session.get("user_id"):
             return flash_and_redirect("This friend request can't be accepted.", "friendrequests")
         
