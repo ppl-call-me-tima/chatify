@@ -57,9 +57,15 @@ def myfriends():
 def remove():
     friendship_id = request.form.get("friendship_id")
     
-    # TODO: Validate whether the session user is a part of that friendship-id  #NeverTrustUserInput
+    rows = execute_retrieve("SELECT low_friend_id, high_friend_id FROM friendships WHERE id = :id",
+                                {"id": friendship_id})
+        
+    ids = [rows[0]["low_friend_id"], rows[0]["high_friend_id"]]
     
-    execute("DELETE FROM friendships WHERE id = :friendship_id", {"friendship_id": friendship_id})
+    if session["user_id"] not in ids:
+        return flash_and_redirect("Friendship deletion not allowed.", "myfriends")
+        
+    execute("DELETE FROM friendships WHERE id = :friendship_id", {"friendship_id": friendship_id})  
     
     return flash_and_redirect("Friend Removed!", "myfriends")
 
