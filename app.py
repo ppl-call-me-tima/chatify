@@ -312,7 +312,7 @@ def upload_pfp():
         rows = execute_retrieve("SELECT pfp_filename FROM user WHERE id = :user_id", 
                                 {"user_id": session.get("user_id")})
         
-        if rows[0]["pfp_filename"] and rows[0]["pfp_filename"] != "default_pfp.jpeg":
+        if rows[0]["pfp_filename"] != "default_pfp.jpeg":
             existing_pfp_filename = rows[0]["pfp_filename"]
             existing_pfp_filepath = os.path.join(app.config["UPLOAD_FOLDER"], existing_pfp_filename)
             os.remove(existing_pfp_filepath)
