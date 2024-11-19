@@ -1,4 +1,5 @@
 cryptography
+boto3
 flask
 gunicorn
 pymysql
