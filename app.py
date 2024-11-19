@@ -1,4 +1,5 @@
 import os.path
+import boto3
 
 from database import execute, execute_retrieve
 from datetime import datetime, timedelta
@@ -9,6 +10,10 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
+s3 = boto3.client("s3")
+
+# S3 Stuff
+aws_bucket_name = os.environ["aws_bucket_name"]
 # Permanent Session
 app.secret_key = "stfu"
 app.permanent_session_lifetime = timedelta(minutes=69)
@@ -49,7 +54,7 @@ def myfriends():
         JOIN user ON user.id = f.friend_id
     """, {"user_id": session.get("user_id")})
     
-    return render_template("myfriends.html", rows=rows)
+    return render_template("myfriends.html", rows=rows, aws_bucket_name=aws_bucket_name)
 
 
 @app.route("/friends/myfriends/remove", methods=["POST"])
@@ -255,13 +260,10 @@ def profile(username):
     
     rows = execute_retrieve("SELECT pfp_filename FROM user WHERE username = :username", 
                             {"username": username})
+      
+    url = f"https://{aws_bucket_name}.s3.us-east-1.amazonaws.com/{rows[0]['pfp_filename']}"
     
-    filepath = os.path.join(app.config["UPLOAD_FOLDER"], rows[0]["pfp_filename"])
-    
-    # Relative path of template files to static directory
-    filepath = "../" + filepath
-    
-    return render_template("profile.html", filepath=filepath, self_profile=self_profile)
+    return render_template("profile.html", url=url, self_profile=self_profile)
 
 
 @app.route("/remove_pfp")
@@ -274,10 +276,7 @@ def remove_pfp():
     if rows[0]["pfp_filename"] == "default_pfp.jpeg":
         return flash_and_redirect("PFP already default!", "profile", username=session.get("username"))
     else:
-        # Remove file from filesystem
-        existing_pfp_filename = rows[0]["pfp_filename"]
-        existing_pfp_filepath = os.path.join(app.config["UPLOAD_FOLDER"], existing_pfp_filename)
-        os.remove(existing_pfp_filepath)
+        s3.delete_object(Bucket=aws_bucket_name, Key=rows[0]["pfp_filename"])
     
         # Set filename to default_pfp in db
         execute("UPDATE user SET pfp_filename = 'default_pfp.jpeg' WHERE id = :user_id", {
@@ -312,16 +311,16 @@ def upload_pfp():
         rows = execute_retrieve("SELECT pfp_filename FROM user WHERE id = :user_id", 
                                 {"user_id": session.get("user_id")})
         
-        if rows[0]["pfp_filename"] != "default_pfp.jpeg":
-            existing_pfp_filename = rows[0]["pfp_filename"]
-            existing_pfp_filepath = os.path.join(app.config["UPLOAD_FOLDER"], existing_pfp_filename)
-            os.remove(existing_pfp_filepath)
+        older_filename = rows[0]["pfp_filename"]
+        
+        if older_filename != "default_pfp.jpeg":
+            s3.delete_object(Bucket=aws_bucket_name, Key=older_filename)
         
         # Insert filename into db
         execute("UPDATE user SET pfp_filename = :filename WHERE id = :user_id", 
                 {"filename": filename, "user_id": session.get("user_id")})
         
-        # Save file to filesystem
-        file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+        # Save file to S3
+        s3.upload_fileobj(file, aws_bucket_name, filename)
         
         return redirect(url_for("profile", username=session.get("username")))
