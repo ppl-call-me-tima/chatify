@@ -2,6 +2,8 @@ from functools import wraps
 from flask import flash, redirect, session, url_for
 from os import environ
 
+import requests  # render.com inactivity prevention
+
 # Uploading files
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
@@ -28,7 +30,11 @@ def log_user_in(user_id: int, username: str):
     session.permanent = True  # For making a session permanent - so that it exists even after the browser is closed
     session["user_id"] = user_id
     session["username"] = username
-    
+
+
+def send_get():
+    requests.get("https://chatify-i0dd.onrender.com/")
+
 
 def url_for_pfp(filename):
     return f"https://{environ['aws_bucket_name']}.s3.us-east-1.amazonaws.com/{filename}"

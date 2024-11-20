@@ -9,13 +9,19 @@ from markupsafe import escape
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 
+from flask_apscheduler import APScheduler  # render.com inactivity prevention
+
 app = Flask(__name__)
 s3 = boto3.client("s3")
 
-app.jinja_env.globals.update(url_for_pfp=url_for_pfp)
+scheduler = APScheduler()
+scheduler.init_app(app)
+scheduler.start()
+scheduler.add_job(id="send_GET", func=send_get, trigger="interval", seconds=600)
 
 # S3 Stuff
 aws_bucket_name = os.environ["aws_bucket_name"]
+app.jinja_env.globals.update(url_for_pfp=url_for_pfp)
 # Permanent Session
 app.secret_key = "stfu"
 app.permanent_session_lifetime = timedelta(minutes=69)
