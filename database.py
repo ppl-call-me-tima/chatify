@@ -22,7 +22,6 @@ connect_string = f"mysql+pymysql://39HVxerRsFMaxdU.root:{password}@gateway01.ap-
 engine = create_engine(connect_string)
 
 
-# Funtions to execute SQL queries from app.py
 def execute(query, parameters = None):
     with engine.connect() as conn:
         conn.execute(text(query), parameters or {})

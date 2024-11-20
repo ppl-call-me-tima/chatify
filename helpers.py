@@ -4,7 +4,6 @@ from os import environ
 
 import requests  # render.com inactivity prevention
 
-# Uploading files
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 def allowed_file(filename):

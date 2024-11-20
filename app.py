@@ -140,7 +140,6 @@ def sendfriendrequests():
     if request.method == "POST":
         username = request.form.get("username")
         
-        # Validate input
         if not username:
             return flash_and_redirect("Enter username!", "sendfriendrequests")
         
@@ -183,7 +182,6 @@ def login():
         username = request.form.get("username")
         password = request.form.get("password")
 
-        # Validate form data
         if not username:
             return flash_and_redirect("Enter name!", "login")
         
@@ -192,7 +190,6 @@ def login():
         
         rows = execute_retrieve("SELECT id, hash FROM user WHERE username = :username", {"username" : username})
                         
-        # User / password mismatch
         if not rows or not check_password_hash(rows[0]["hash"], password):
             return flash_and_redirect("Enter correct username / password!", "login")
         
@@ -220,7 +217,6 @@ def register():
         password = request.form.get("password")
         confirmation = request.form.get("confirmation")
         
-        # Validate form data
         if not username:
             return flash_and_redirect("Enter username!", "register")
         
@@ -233,17 +229,14 @@ def register():
         if password != confirmation:
             return flash_and_redirect("Passwords don't match!", "register")
                 
-        # Check if username already exists
         rows = execute_retrieve("SELECT id FROM user WHERE username = :username", {"username":username})
         
         if rows:
             return flash_and_redirect("Username already taken!", "login")
                 
-        # Insert data into table
         execute("INSERT INTO user (username, hash) VALUES (:username, :hash)", 
                 {"username":username, "hash":generate_password_hash(password)})
 
-        # Log-in the user
         rows = execute_retrieve("SELECT id FROM user WHERE username = :username", {"username":username})
         log_user_in(rows[0]["id"], username)
         
@@ -273,7 +266,6 @@ def profile(username):
 @app.route("/remove_pfp")
 @login_required
 def remove_pfp():
-    # Retrieve filename from db
     rows = execute_retrieve("SELECT pfp_filename FROM user WHERE id = :user_id", 
                                 {"user_id": session.get("user_id")})
     
@@ -282,7 +274,6 @@ def remove_pfp():
     else:
         s3.delete_object(Bucket=aws_bucket_name, Key=rows[0]["pfp_filename"])
     
-        # Set filename to default_pfp in db
         execute("UPDATE user SET pfp_filename = 'default_pfp.jpeg' WHERE id = :user_id", {
             "user_id": session.get("user_id")})
         
@@ -295,7 +286,6 @@ def upload_pfp():
     if request.method == "POST":
         file = request.files.get("upload_pfp")
         
-        # Validation
         if not file:
             return flash_and_redirect("Choose a file!", "profile", username=session.get("username"))
         
@@ -305,13 +295,11 @@ def upload_pfp():
         if len(file.filename) > 50:
             return flash_and_redirect("File name should be less than 50 characters! GEEZ!", "profile", username=session.get("username"))        
         
-        # Generate secure filename as filename+timestamp and
         filename = secure_filename(file.filename)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S%f")
         name, ext = os.path.splitext(filename)
         filename = f"{name}_{timestamp}{ext}"
         
-        # Remove older file if exists
         rows = execute_retrieve("SELECT pfp_filename FROM user WHERE id = :user_id", 
                                 {"user_id": session.get("user_id")})
         
@@ -320,11 +308,9 @@ def upload_pfp():
         if older_filename != "default_pfp.jpeg":
             s3.delete_object(Bucket=aws_bucket_name, Key=older_filename)
         
-        # Insert filename into db
         execute("UPDATE user SET pfp_filename = :filename WHERE id = :user_id", 
                 {"filename": filename, "user_id": session.get("user_id")})
         
-        # Save file to S3
         s3.upload_fileobj(file, aws_bucket_name, filename)
         
         return redirect(url_for("profile", username=session.get("username")))
