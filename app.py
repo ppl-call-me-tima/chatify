@@ -168,6 +168,19 @@ def sendfriendrequests():
         if rows:
             return flash_and_redirect("They're already your friend!", "sendfriendrequests")
         
+        # Check for already present reverse friend request
+        rows = execute_retrieve("SELECT id FROM friend_requests WHERE req_from = :from AND req_to = :to",
+                                {"from": to_friend_id, "to": session.get("user_id")})
+        
+        if rows:
+            execute("DELETE FROM friend_requests WHERE id = :id",
+                    {"id": rows[0]["id"]})
+            
+            execute("INSERT INTO friendships (low_friend_id, high_friend_id) VALUES (:low_friend_id, :high_friend_id)",
+                    {"low_friend_id": low_friend_id, "high_friend_id": high_friend_id})
+            
+            return flash_and_redirect("They had sent you a request, now you're both friends!", "sendfriendrequests")
+        
         execute("INSERT INTO friend_requests (req_from, req_to) VALUES (:from, :to)", 
                 {"from": session.get("user_id"), "to": to_friend_id})
         
