@@ -4,13 +4,15 @@ import boto3
 from database import execute, execute_retrieve
 from datetime import datetime, timedelta
 from flask import Flask, render_template, redirect, request, session, url_for
-from helpers import allowed_file, flash_and_redirect, log_user_in, login_required
+from helpers import *
 from markupsafe import escape
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 s3 = boto3.client("s3")
+
+app.jinja_env.globals.update(url_for_pfp=url_for_pfp)
 
 # S3 Stuff
 aws_bucket_name = os.environ["aws_bucket_name"]
@@ -54,7 +56,7 @@ def myfriends():
         JOIN user ON user.id = f.friend_id
     """, {"user_id": session.get("user_id")})
     
-    return render_template("myfriends.html", rows=rows, aws_bucket_name=aws_bucket_name)
+    return render_template("myfriends.html", rows=rows)
 
 
 @app.route("/friends/myfriends/remove", methods=["POST"])
@@ -260,10 +262,8 @@ def profile(username):
     
     rows = execute_retrieve("SELECT pfp_filename FROM user WHERE username = :username", 
                             {"username": username})
-      
-    url = f"https://{aws_bucket_name}.s3.us-east-1.amazonaws.com/{rows[0]['pfp_filename']}"
     
-    return render_template("profile.html", url=url, self_profile=self_profile)
+    return render_template("profile.html", filename=rows[0]["pfp_filename"], self_profile=self_profile)
 
 
 @app.route("/remove_pfp")
@@ -324,3 +324,4 @@ def upload_pfp():
         s3.upload_fileobj(file, aws_bucket_name, filename)
         
         return redirect(url_for("profile", username=session.get("username")))
+    
