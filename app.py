@@ -29,9 +29,7 @@ app.permanent_session_lifetime = timedelta(minutes=69)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 # Uploading Files
-UPLOAD_FOLDER = "static/uploads"
 app.config["MAX_CONTENT_LENGTH"] = 64 * 1000 * 1000  # 64MB
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 @app.route("/")
 @login_required
