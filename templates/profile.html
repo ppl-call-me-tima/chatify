@@ -8,7 +8,7 @@ Profile
 <div class="row">
     <div class="col-5 ms-4">
         <div class="card" style="display: inline-block">
-            <img src="{{ url_for_pfp(filename) }}" alt="profile photo" style="height: 430px; width: 430px;">
+            <img src="{{ url_for_pfp(row.pfp_filename) }}" alt="profile photo" style="height: 430px; width: 430px;">
             {% if self_profile %}
             <div class="card-body">
                 <form action="/upload_pfp" enctype="multipart/form-data" method="post">
@@ -24,8 +24,8 @@ Profile
     </div>
     <div class="col-3">
         <div class="left-align geist-mono-100">
-            <h6>@handle</h6>
-            <h1 class="geist-mono-500">fname lname</h1>
+            <h6>@{{ row.username }}</h6>
+            <h1 class="geist-mono-500">{{ row.fname }} {{ row.lname }}</h1>
         </div>
     </div>
 </div>

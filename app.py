@@ -270,10 +270,10 @@ def profile(username):
     else:
         self_profile = False
     
-    rows = execute_retrieve("SELECT pfp_filename FROM user WHERE username = :username", 
-                            {"username": username})
+    rows = execute_retrieve("SELECT username, pfp_filename, fname, lname FROM user WHERE username = :username", 
+                            {"username": username})        
     
-    return render_template("profile.html", filename=rows[0]["pfp_filename"], self_profile=self_profile)
+    return render_template("profile.html", row=rows[0], self_profile=self_profile)
 
 
 @app.route("/remove_pfp")
