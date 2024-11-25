@@ -3,7 +3,7 @@ import boto3
 
 from database import execute, execute_retrieve
 from datetime import datetime, timedelta
-from flask import Flask, render_template, redirect, request, session, url_for
+from flask import Flask, jsonify, render_template, redirect, request, session, url_for
 from helpers import *
 from markupsafe import escape
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -274,6 +274,17 @@ def profile(username):
                             {"username": username})
     
     return render_template("profile.html", row=rows[0], self_profile=self_profile)
+
+
+@app.route("/profile/inline_edit", methods=["POST"])
+@login_required
+def inline_edit():
+    new_name = request.json["name"]
+        
+    execute("UPDATE user SET name = :name WHERE id = :id",
+            {"name": new_name, "id": session.get("user_id")})
+    
+    return jsonify({"status": "success"})
 
 
 @app.route("/remove_pfp")

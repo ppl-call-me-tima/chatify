@@ -22,11 +22,17 @@ Profile
             {% endif %}
         </div>
     </div>
-    <div class="col-3">
+    <div class="col-4">
         <div class="left-align geist-mono-100">
             <h6 >@{{ row.username }}</h6>
-            <h1 id="" class="geist-mono-500">{{ row.name }}</h1>
+            <span id="name" class="geist-mono-500 h1">{{ row.name }}</span>&emsp;
+
+            {% if self_profile %}
+                <button id="edit-button" onclick="inlineEdit('name', 'edit-button')">Edit</button>
+            {% endif %}
         </div>
     </div>
 </div>
+
+<script src="../static/script.js"></script>
 {% endblock %}
