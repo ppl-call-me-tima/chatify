@@ -5,18 +5,28 @@ Profile
 {% endblock %}
 
 {% block main %}
-<div class="card" style="display: inline-block">
-    <img src="{{ url_for_pfp(filename) }}" alt="profile photo" style="height: 450px; width: 450px;">
-    {% if self_profile %}
-    <div class="card-body">
-        <form action="/upload_pfp" enctype="multipart/form-data" method="post">
-            <input class="form-control form-control-lg" name="upload_pfp" type="file">
-            <input class="form-control form-control-lg" type="submit" value="Change Profile Photo">
-        </form>
-        <form action="/remove_pfp">
-            <input class="form-control form-control-lg" type="submit" value="Remove">
-        </form>
+<div class="row">
+    <div class="col-5 ms-4">
+        <div class="card" style="display: inline-block">
+            <img src="{{ url_for_pfp(filename) }}" alt="profile photo" style="height: 430px; width: 430px;">
+            {% if self_profile %}
+            <div class="card-body">
+                <form action="/upload_pfp" enctype="multipart/form-data" method="post">
+                    <input class="form-control form-control-lg" name="upload_pfp" type="file">
+                    <input class="form-control form-control-lg" type="submit" value="Change Profile Photo">
+                </form>
+                <form action="/remove_pfp">
+                    <input class="form-control form-control-lg" type="submit" value="Remove">
+                </form>
+            </div>
+            {% endif %}
+        </div>
     </div>
-    {% endif %}
+    <div class="col-3">
+        <div class="left-align geist-mono-100">
+            <h6>@handle</h6>
+            <h1 class="geist-mono-500">fname lname</h1>
+        </div>
+    </div>
 </div>
 {% endblock %}
