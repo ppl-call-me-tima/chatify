@@ -270,8 +270,8 @@ def profile(username):
     else:
         self_profile = False
     
-    rows = execute_retrieve("SELECT username, pfp_filename, fname, lname FROM user WHERE username = :username", 
-                            {"username": username})        
+    rows = execute_retrieve("SELECT username, pfp_filename, name FROM user WHERE username = :username", 
+                            {"username": username})
     
     return render_template("profile.html", row=rows[0], self_profile=self_profile)
 
