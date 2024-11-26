@@ -6,7 +6,7 @@ Profile
 
 {% block main %}
 <div class="row">
-    <div class="col-5 ms-4">
+    <div class="col-auto ms-2">
         <div class="card" style="display: inline-block">
             <img src="{{ url_for_pfp(row.pfp_filename) }}" alt="profile photo" style="height: 430px; width: 430px;">
             {% if self_profile %}
@@ -22,7 +22,7 @@ Profile
             {% endif %}
         </div>
     </div>
-    <div class="col-4">
+    <div class="col">
         <div class="left-align geist-mono-100">
             <h6 >@{{ row.username }}</h6>
             <span id="name" class="geist-mono-500 h1">{{ row.name }}</span>&emsp;
