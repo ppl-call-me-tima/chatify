@@ -270,7 +270,7 @@ def profile(username):
     else:
         self_profile = False
     
-    rows = execute_retrieve("SELECT username, pfp_filename, name FROM user WHERE username = :username", 
+    rows = execute_retrieve("SELECT username, pfp_filename, name, bio FROM user WHERE username = :username", 
                             {"username": username})
     
     return render_template("profile.html", row=rows[0], self_profile=self_profile)
@@ -279,10 +279,11 @@ def profile(username):
 @app.route("/profile/inline_edit", methods=["POST"])
 @login_required
 def inline_edit():
-    new_name = request.json["name"]
-        
-    execute("UPDATE user SET name = :name WHERE id = :id",
-            {"name": new_name, "id": session.get("user_id")})
+    field = request.json.get("field")
+    value = request.json.get("value")
+    
+    execute(f"UPDATE user SET {field} = :value WHERE id = :id",
+            {"value": value, "id": session.get("user_id")})
     
     return jsonify({"status": "success"})
 

@@ -22,16 +22,35 @@ Profile
             {% endif %}
         </div>
     </div>
-    <div class="col">
-        <div class="left-align geist-mono-100">
-            <h6 >@{{ row.username }}</h6>
-            <span id="name" class="geist-mono-500 h1">{{ row.name }}</span>&emsp;
+    
+    <div class="col geist-mono-500">
+        <div class="row mb-3">
+            <div>
+                <h6>@{{ row.username }}</h6>
+                <span id="name" class="h1">{{ row.name }}</span>&emsp;
 
-            {% if self_profile %}
-                <button id="edit-button" onclick="inlineEdit('name', 'edit-button')">Edit</button>
-            {% endif %}
+                {% if self_profile %}
+                <button class="btn p-0" id="name-edit-button" onclick="inlineEdit('name')">
+                    <img src="../static/icons/edit.png" alt="edit icon" height="25px">
+                </button>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="row">
+            <div>
+                <span id="bio" class="geist-mono-500 h6 me-3">{{ row.bio }}</span>
+
+                {% if self_profile %}
+                <button class="btn p-0" id="bio-edit-button" onclick="inlineEdit('bio')">
+                    <img src="../static/icons/edit.png" alt="edit icon" height="15px">
+                </button>
+                {% endif %}
+            </div>
         </div>
     </div>
+    
+    <div class="col-4" id="dummy"></div>
 </div>
 
 <script src="../static/script.js"></script>

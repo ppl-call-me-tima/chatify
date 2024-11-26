@@ -1,26 +1,39 @@
-function inlineEdit(originalNameID, editButtonID) {
-    const originalNameElement = document.getElementById(originalNameID);
-    const editButtonElement = document.getElementById(editButtonID);
-    const originalName = originalNameElement.textContent;
+function inlineEdit(originalDisplayID) {
+    const originalDisplayElement = document.getElementById(originalDisplayID);
+    const editButtonElement = document.getElementById(originalDisplayID + '-edit-button');
+    const originalDisplayContent = originalDisplayElement.textContent;
 
     const inputField = document.createElement("input");
     const saveButton = document.createElement("button");
+    const tickImageElement = document.createElement("img");
+    tickImageElement.src = "../static/icons/tick.png";
+    saveButton.appendChild(tickImageElement);
 
-    inputField.value = originalName;
-    inputField.classList = "h1";
-    inputField.style.width = "340px";
+    inputField.value = originalDisplayContent;
+    saveButton.classList = "btn p-0";
 
-    saveButton.textContent = "Change";
+    switch(originalDisplayID){
+        case "name":
+            inputField.classList = "h1";
+            inputField.style.width = "340px";
+            tickImageElement.style.height = "25px";
+            break;
 
-    originalNameElement.parentNode.insertBefore(inputField, originalNameElement);
+        case "bio":
+            inputField.classList = "h6";
+            inputField.style.width = "300px";
+            tickImageElement.style.height = "15px";
+            break
+    }
+
+    originalDisplayElement.parentNode.insertBefore(inputField, originalDisplayElement);
     editButtonElement.parentNode.insertBefore(saveButton, editButtonElement);
 
-    originalNameElement.style.display = "none";
+    originalDisplayElement.style.display = "none";
     editButtonElement.style.display = "none";
 
-
     saveButton.onclick = async function () {
-        const newName = inputField.value;
+        const newDisplayContent = inputField.value;
         inputField.remove();
         saveButton.remove();
 
@@ -30,12 +43,13 @@ function inlineEdit(originalNameID, editButtonID) {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                name: newName
+                field: originalDisplayID,
+                value: newDisplayContent
             })
-        });          
-        originalNameElement.textContent = newName;
+        });
+        originalDisplayElement.textContent = newDisplayContent;
 
-        originalNameElement.style.display = "inline";
+        originalDisplayElement.style.display = "inline";
         editButtonElement.style.display = "inline";
     }
 }
