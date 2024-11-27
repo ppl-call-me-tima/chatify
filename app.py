@@ -20,10 +20,10 @@ scheduler.start()
 scheduler.add_job(id="send_GET", func=send_get, trigger="interval", seconds=600)
 
 # S3 Stuff
-aws_bucket_name = os.environ["aws_bucket_name"]
+aws_bucket_name = os.environ["AWS_BUCKET_NAME"]
 app.jinja_env.globals.update(url_for_pfp=url_for_pfp)
 # Permanent Session
-app.secret_key = "stfu"
+app.secret_key = os.environ["APP_KEY"].encode("utf-8")
 app.permanent_session_lifetime = timedelta(minutes=69)
 # Database
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
