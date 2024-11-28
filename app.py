@@ -36,7 +36,22 @@ app.config["MAX_CONTENT_LENGTH"] = 64 * 1000 * 1000  # 64MB
 def index():
     # TODO: Implement home page
     
-    return render_template("index.html", username=session.get("username"))
+    rows = execute_retrieve("""
+        SELECT f.id AS friendship_id, f.friend_id, user.username, user.pfp_filename
+        FROM
+        (
+            SELECT friendships.id,
+                CASE
+                    WHEN low_friend_id = :user_id THEN high_friend_id
+                    ELSE low_friend_id
+                END AS friend_id
+            FROM friendships
+            WHERE low_friend_id = :user_id OR high_friend_id = :user_id
+        ) AS f
+        JOIN user ON user.id = f.friend_id
+    """, {"user_id": session.get("user_id")})
+    
+    return render_template("index.html", rows=rows)
 
 
 @app.route("/friends/myfriends")

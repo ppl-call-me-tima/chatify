@@ -5,5 +5,32 @@ Homepage
 {% endblock %}
 
 {% block main %}
-hello {{ username }}
+
+<div class="container mt-4" style="height: 80vh; width: 80vw; border: 1px solid;">
+    <div class="row">
+        <div class="col-4" style="height: 80vh; border: 1px solid;">
+            <div class="my-3" style="height: 75vh; overflow-y: scroll;">
+                {% for row in rows %}
+                <div class="card mx-1 my-1 px-3 py-3">
+                    <div class="row">
+                        <div class="col-2">
+                            <img src="{{ url_for_pfp(row.pfp_filename) }}" alt="pfp" height="40px" width="40px"
+                                style="border-radius: 15px;">
+                        </div>
+                        <div class="col">
+                            <h4><a class="link-offset-2-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover text-dark"
+                                    href="/profile/{{ row.username }}">{{ row.username }}</a></h4>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col" style="height: 80vh; border: 1px solid">
+            <div style="height: 70vh; border: 1px solid black;">
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
