@@ -1,5 +1,11 @@
 {% extends "layout.html" %}
 
+{% block socketio_header %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+    integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+    crossorigin="anonymous"></script>
+{% endblock %}
+
 {% block title %}
 Homepage
 {% endblock %}
@@ -11,31 +17,38 @@ Homepage
         <div class="col-4" style="height: 80vh; border: 1px solid;">
             <div class="my-3" style="height: 75vh; overflow-y: scroll;">
                 {% for row in rows %}
-                <div class="card mx-1 my-1 px-3 py-3">
-                    <div class="row">
-                        <div class="col-2">
-                            <img src="{{ url_for_pfp(row.pfp_filename) }}" alt="pfp" height="40px" width="40px"
-                                style="border-radius: 15px;">
-                        </div>
-                        <div class="col">
-                            <h4><a class="link-offset-2-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover text-dark"
-                                    href="/profile/{{ row.username }}">{{ row.username }}</a></h4>
+                <button onclick="selectFriend(' {{ row.friendship_id }} ')" class="btn my-1 p-0" style="width: 23vw;">
+                    <div class="card mx-1 my-0 px-3 py-3">
+                        <div class="row">
+                            <div class="col-2">
+                                <img src="{{ url_for_pfp(row.pfp_filename) }}" alt="pfp" height="40px" width="40px"
+                                    style="border-radius: 15px;">
+                            </div>
+                            <div class="col">
+                                <h4><a class="link-offset-2-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover text-dark"
+                                        href="/profile/{{ row.username }}">{{ row.username }}</a></h4>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </button>
                 {% endfor %}
             </div>
         </div>
         <div class="col" style="height: 80vh; border: 1px solid">
-            <div class="my-3" id="message-box" style="height: 67vh; border: 2px solid;">
+            <div id="message-box-header" style="margin-top: 1.75vh; border: 2px solid;">
+                <span id="message-box-header-name">Name</span><br>
+                <span id="online-status"><br></span>
             </div>
-            <div class="input-group" id="msg-input" style="height: 6vh;">
-                <input class="form-control" type="text" name="message" id="message" placeholder="Send message">
-                <button class="input-group-text btn btn-dark"
-                    style="height: 5.8vh; width: 5.7vw; margin-inline-start: 0.6vw;" onclick="">SEND</button>
+            <div class="" id="message-box" style="height: 65vh; margin-bottom: 2.5vh; border: 2px solid;">
+            </div>
+            <div class="input-group" id="message-input" style="height: 6vh;">
+                <input disabled class="form-control" type="text" id="message" placeholder="Send message">
+                <button class="input-group-text btn btn-dark" id="send-button" disabled
+                    style="height: 5.8vh; width: 5.7vw; margin-inline-start: 0.6vw;" onclick="sendMessage()">SEND</button>
             </div>
         </div>
     </div>
 </div>
 
+<script src="../static/socketio.js"></script>
 {% endblock %}

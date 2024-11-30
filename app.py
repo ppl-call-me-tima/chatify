@@ -4,6 +4,7 @@ import boto3
 from database import execute, execute_retrieve
 from datetime import datetime, timedelta
 from flask import Flask, jsonify, render_template, redirect, request, session, url_for
+from flask_socketio import SocketIO, join_room, leave_room, send
 from helpers import *
 from markupsafe import escape
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -13,6 +14,7 @@ from flask_apscheduler import APScheduler  # render.com inactivity prevention
 
 app = Flask(__name__)
 s3 = boto3.client("s3")
+socketio = SocketIO(app)
 
 scheduler = APScheduler()
 scheduler.init_app(app)
@@ -30,6 +32,42 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 # Uploading Files
 app.config["MAX_CONTENT_LENGTH"] = 64 * 1000 * 1000  # 64MB
+
+@socketio.on("connect")
+def connect():
+    execute("UPDATE user SET is_online = TRUE WHERE id = :id", 
+            {"id": session.get("user_id")})
+    print(f"{session.get('username')} established connection to the socket.")
+
+
+@socketio.on("disconnect")
+def disconnect():
+    leave_room(session.get("room_code"))
+    send(f"{session.get('username')} left room code {session.get('room_code')}", to=session.get("room_code"))     
+
+    # print(f"{session.get('username')} disconnected from the socket.")
+    execute("UPDATE user SET is_online = FALSE WHERE id = :id", 
+            {"id": session.get("user_id")})
+
+
+@socketio.on("join_a_room")
+def join_a_room(room_code):
+    if (session.get("room_code")):
+        leave_room(room_code)
+        # send(f"{session.get('username')} left room code {session.get('room_code')}", to=session.get("room_code"))     
+    
+    session["room_code"] = room_code
+    join_room(room_code)
+    # send(f"{session.get('username')} joined room code {session.get('room_code')}", to=session.get('room_code'))
+
+
+@socketio.on("message")
+def message(message):
+    # TODO: add msgs to db
+    
+    print(f"{session.get('username')} : {message}")
+    send(message, to=session.get("room_code"))
+
 
 @app.route("/")
 @login_required
@@ -354,4 +392,7 @@ def upload_pfp():
         s3.upload_fileobj(file, aws_bucket_name, filename)
         
         return redirect(url_for("profile", username=session.get("username")))
-    
+
+
+if __name__ == "__main__":
+    socketio.run(app, debug=True)
