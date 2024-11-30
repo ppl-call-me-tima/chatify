@@ -7,11 +7,13 @@ socketio.on("message", (message) => {
     messageBoxElement.appendChild(messageDivElement);
 });
 
-const selectFriend = (friendship_id) => {
+const joinRoom = (friendship_id, username) => {
     console.log(friendship_id);
     socketio.emit("join_a_room", friendship_id);
     document.getElementById("message").disabled = false;
+    document.getElementById("message").focus();
     document.getElementById("send-button").disabled = false;
+    document.getElementById("message-box-header-name").textContent = username;
 }
 
 const sendMessage = () => {

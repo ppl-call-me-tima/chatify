@@ -35,8 +35,9 @@ app.config["MAX_CONTENT_LENGTH"] = 64 * 1000 * 1000  # 64MB
 
 @socketio.on("connect")
 def connect():
-    execute("UPDATE user SET is_online = TRUE WHERE id = :id", 
-            {"id": session.get("user_id")})
+    # execute("UPDATE user SET is_online = TRUE WHERE id = :id", 
+    #         {"id": session.get("user_id")})
+    
     print(f"{session.get('username')} established connection to the socket.")
 
 
@@ -46,8 +47,8 @@ def disconnect():
     send(f"{session.get('username')} left room code {session.get('room_code')}", to=session.get("room_code"))     
 
     # print(f"{session.get('username')} disconnected from the socket.")
-    execute("UPDATE user SET is_online = FALSE WHERE id = :id", 
-            {"id": session.get("user_id")})
+    # execute("UPDATE user SET is_online = FALSE WHERE id = :id", 
+    #         {"id": session.get("user_id")})
 
 
 @socketio.on("join_a_room")
@@ -59,7 +60,7 @@ def join_a_room(room_code):
     session["room_code"] = room_code
     join_room(room_code)
     # send(f"{session.get('username')} joined room code {session.get('room_code')}", to=session.get('room_code'))
-
+    
 
 @socketio.on("message")
 def message(message):
