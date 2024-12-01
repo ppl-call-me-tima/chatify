@@ -44,20 +44,37 @@ def connect():
 @socketio.on("disconnect")
 def disconnect():
     leave_room(session.get("room_code"))
-    session.pop("room_code")
 
 
 @socketio.on("join_a_room")
-def join_a_room(room_code):
+def join_a_room(friendship_id):
     if (session.get("room_code")):
         leave_room(session.get("room_code"))
+        
+    rows = execute_retrieve("""
+        SELECT (low_friend_id = :user_id OR high_friend_id = :user_id) AS is_part_of_friendship
+        FROM friendships
+        WHERE id = :friendship_id
+    """, {"user_id": session.get("user_id"), "friendship_id": friendship_id})
     
-    session["room_code"] = room_code
+    if len(rows) == 0 or not int(rows[0]["is_part_of_friendship"]):
+        return
+        
+    session["room_code"] = friendship_id
     join_room(session.get("room_code"))
 
 
 @socketio.on("load_messages")
-def load_messages():
+def load_messages(friendship_id):
+    rows = execute_retrieve("""
+        SELECT (low_friend_id = :user_id OR high_friend_id = :user_id) AS is_part_of_friendship
+        FROM friendships
+        WHERE id = :friendship_id
+    """, {"user_id": session.get("user_id"), "friendship_id": friendship_id})
+    
+    if len(rows) == 0 or not rows[0]["is_part_of_friendship"]:
+        return
+    
     rows = execute_retrieve("""
         SELECT sender.username AS msg_from_username, receiver.username AS msg_to_username, m.msg AS msg, m.timestamp AS timestamp
         FROM user sender, user receiver, messages m
@@ -75,9 +92,7 @@ def load_messages():
     
 
 @socketio.on("message")
-def message(data):
-    # TODO: Validate if msg_to user is actually a friend
-    
+def message(data):  
     rows = execute_retrieve("SELECT id FROM user WHERE username = :username", 
                             {"username": data["msg_to"]})
     

@@ -12,6 +12,7 @@ function updateSendButton() {
 var socketio = io();
 
 socketio.on("load_messages", (rows) => {
+    console.log(rows)
     for (const row of rows) {
         loadSingleMessageIntoMessageBox(row);
     }
@@ -27,7 +28,7 @@ const joinRoom = (friendship_id, username) => {
     document.getElementById("message").disabled = false;
     document.getElementById("message").focus();
     document.getElementById("message-box-header-name").textContent = username;
-    socketio.emit("load_messages");
+    socketio.emit("load_messages", friendship_id);
 }
 
 const sendMessage = () => {
