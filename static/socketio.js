@@ -13,18 +13,15 @@ var socketio = io();
 
 socketio.on("load_messages", (rows) => {
     for (const row of rows) {
-        // console.log(row);
         loadSingleMessageIntoMessageBox(row);
     }
 });
 
 socketio.on("message", (data) => {
-    // console.log(data);
     loadSingleMessageIntoMessageBox(data);
 });
 
 const joinRoom = (friendship_id, username) => {
-    // console.log(friendship_id);
     document.getElementById("message-box").innerHTML = "";
     socketio.emit("join_a_room", friendship_id);
     document.getElementById("message").disabled = false;
@@ -46,7 +43,6 @@ const sendMessage = () => {
 
 // HELPER FUNCTIONS
 function loadSingleMessageIntoMessageBox(data) {
-    console.log(data);
     const messageBoxElement = document.getElementById("message-box");
     const messageDivElement = document.createElement("div");
     messageDivElement.innerHTML = `

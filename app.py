@@ -44,24 +44,15 @@ def connect():
 @socketio.on("disconnect")
 def disconnect():
     leave_room(session.get("room_code"))
-    
-    # This is not working, but it is not even required for now.
-    # send(f"{session.get('username')} left room code {session.get('room_code')}", to=session.get("room_code"))     
-
-    # print(f"{session.get('username')} disconnected from the socket.")
-    # execute("UPDATE user SET is_online = FALSE WHERE id = :id", 
-    #         {"id": session.get("user_id")})
 
 
 @socketio.on("join_a_room")
 def join_a_room(room_code):
     if (session.get("room_code")):
         leave_room(room_code)
-        # send(f"{session.get('username')} left room code {session.get('room_code')}", to=session.get("room_code"))     
     
     session["room_code"] = room_code
     join_room(room_code)
-    # send(f"{session.get('username')} joined room code {session.get('room_code')}", to=session.get('room_code'))
 
 
 @socketio.on("load_messages")
@@ -79,7 +70,6 @@ def load_messages():
         timestamp = row["timestamp"]
         row["timestamp"] = f"{timestamp[8:10]}:{timestamp[10:12]} {timestamp[0:4]}/{timestamp[4:6]}/{timestamp[6:8]}"
     
-    # print(rows)
     emit("load_messages", rows, json=True)
     
 
@@ -110,7 +100,6 @@ def message(data):
         "timestamp": f"{timestamp[8:10]}:{timestamp[10:12]} {timestamp[0:4]}/{timestamp[4:6]}/{timestamp[6:8]}"
     }
     
-    print(f"{session.get('username')} : {data['message']}")
     send(json_data, to=session.get("room_code"))
 
 
