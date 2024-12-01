@@ -39,6 +39,7 @@ const sendMessage = () => {
         message: message
     });
     document.getElementById("message").value = "";
+    document.getElementById("send-button").disabled = true;
 }
 
 // HELPER FUNCTIONS
