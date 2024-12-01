@@ -62,19 +62,8 @@ def join_a_room(friendship_id):
         
     session["room_code"] = friendship_id
     join_room(session.get("room_code"))
-
-
-@socketio.on("load_messages")
-def load_messages(friendship_id):
-    rows = execute_retrieve("""
-        SELECT (low_friend_id = :user_id OR high_friend_id = :user_id) AS is_part_of_friendship
-        FROM friendships
-        WHERE id = :friendship_id
-    """, {"user_id": session.get("user_id"), "friendship_id": friendship_id})
     
-    if len(rows) == 0 or not rows[0]["is_part_of_friendship"]:
-        return
-    
+    # Load the previous messages
     rows = execute_retrieve("""
         SELECT sender.username AS msg_from_username, receiver.username AS msg_to_username, m.msg AS msg, m.timestamp AS timestamp
         FROM user sender, user receiver, messages m

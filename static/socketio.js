@@ -28,7 +28,6 @@ const joinRoom = (friendship_id, username) => {
     document.getElementById("message").disabled = false;
     document.getElementById("message").focus();
     document.getElementById("message-box-header-name").textContent = username;
-    socketio.emit("load_messages", friendship_id);
 }
 
 const sendMessage = () => {
