@@ -1,25 +1,15 @@
 var socketio = io();
 
 socketio.on("load_messages", (rows) => {
-    for (const row of rows){
+    for (const row of rows) {
         // console.log(row);
-        const messageBoxElement = document.getElementById("message-box")
-        const messageDivElement = document.createElement("div");
-        messageDivElement.innerHTML += `
-            <strong>${row["msg_from_username"]}</strong> : ${row["msg"]} - ${row["timestamp"]}
-        `;
-        messageBoxElement.appendChild(messageDivElement);
+        loadSingleMessageIntoMessageBox(row);
     }
 });
 
 socketio.on("message", (data) => {
     // console.log(data);
-    const messageBoxElement = document.getElementById("message-box");
-    const messageDivElement = document.createElement("div");
-    messageDivElement.innerHTML += `
-        <strong>${data["msg_from"]}</strong> : ${data["msg"]} - ${data["timestamp"]}
-    `;
-    messageBoxElement.appendChild(messageDivElement);
+    loadSingleMessageIntoMessageBox(data);
 });
 
 const joinRoom = (friendship_id, username) => {
@@ -42,4 +32,15 @@ const sendMessage = () => {
         message: message
     });
     document.getElementById("message").value = "";
+}
+
+// HELPER FUNCTIONS
+function loadSingleMessageIntoMessageBox(data) {
+    console.log(data);
+    const messageBoxElement = document.getElementById("message-box");
+    const messageDivElement = document.createElement("div");
+    messageDivElement.innerHTML = `
+        <strong>${data["msg_from_username"]}</strong> : ${data["msg"]} <span style="font-size: 7.5px;">${data["timestamp"]}</span>
+    `;
+    messageBoxElement.appendChild(messageDivElement);
 }

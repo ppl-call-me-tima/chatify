@@ -44,7 +44,9 @@ def connect():
 @socketio.on("disconnect")
 def disconnect():
     leave_room(session.get("room_code"))
-    send(f"{session.get('username')} left room code {session.get('room_code')}", to=session.get("room_code"))     
+    
+    # This is not working, but it is not even required for now.
+    # send(f"{session.get('username')} left room code {session.get('room_code')}", to=session.get("room_code"))     
 
     # print(f"{session.get('username')} disconnected from the socket.")
     # execute("UPDATE user SET is_online = FALSE WHERE id = :id", 
@@ -72,7 +74,11 @@ def load_messages():
         AND m.friendship_id = :friendship_id
         ORDER BY timestamp ASC;
     """, {"friendship_id": session.get("room_code")})
-        
+    
+    for row in rows:
+        timestamp = row["timestamp"]
+        row["timestamp"] = f"{timestamp[8:10]}:{timestamp[10:12]} {timestamp[0:4]}/{timestamp[4:6]}/{timestamp[6:8]}"
+    
     # print(rows)
     emit("load_messages", rows, json=True)
     
@@ -98,10 +104,10 @@ def message(data):
     })
     
     json_data = {
-        "msg_from": session.get("username"),
-        "msg_to": data["msg_to"],
+        "msg_from_username": session.get("username"),
+        "msg_to_username": data["msg_to"],
         "msg": data["message"],
-        "timestamp": timestamp
+        "timestamp": f"{timestamp[8:10]}:{timestamp[10:12]} {timestamp[0:4]}/{timestamp[4:6]}/{timestamp[6:8]}"
     }
     
     print(f"{session.get('username')} : {data['message']}")
