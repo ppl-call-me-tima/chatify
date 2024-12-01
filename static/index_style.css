@@ -1,0 +1,44 @@
+#outer-box {
+    height: 80vh;
+    width: 80vw;
+    border: 1px solid;
+}
+
+#left-col-box-outer {
+    height: 80vh;
+    border: 1px solid;
+}
+
+#left-col-box-inner {
+    height: 75vh;
+    overflow-y: scroll;
+}
+
+#friend-button {
+    width: 23vw;
+}
+
+#right-col-box-outer {
+    height: 80vh;
+    border: 1px solid
+}
+
+#message-box-header {
+    margin-top: 1.75vh;
+    border: 2px solid;
+}
+
+#message-box-outer {
+    height: 64vh;
+    margin-bottom: 2.5vh;
+    border: 2px solid;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+#send-button {
+    height: 5.8vh;
+    width: 5.7vw;
+    margin-inline-start: 0.4vw;
+}

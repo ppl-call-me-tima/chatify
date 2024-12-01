@@ -12,12 +12,13 @@ Homepage
 
 {% block main %}
 
-<div class="container mt-4" style="height: 80vh; width: 80vw; border: 1px solid;">
+<div id="outer-box" class="container mt-4">
     <div class="row">
-        <div class="col-4" style="height: 80vh; border: 1px solid;">
-            <div class="my-3" style="height: 75vh; overflow-y: scroll;">
+        <div id="left-col-box-outer" class="col-4">
+            <div id="left-col-box-inner" class="my-3">
                 {% for row in rows %}
-                <button onclick="joinRoom('{{ row.friendship_id }}', '{{ row.username }}')" class="btn my-1 p-0" style="width: 23vw;">
+                <button id="friend-button" class="btn my-1 p-0"
+                    onclick="joinRoom('{{ row.friendship_id }}', '{{ row.username }}')">
                     <div class="card mx-1 my-0 px-3 py-3">
                         <div class="row">
                             <div class="col-2">
@@ -34,18 +35,17 @@ Homepage
                 {% endfor %}
             </div>
         </div>
-        <div class="col" style="height: 80vh; border: 1px solid">
-            <div id="message-box-header" style="margin-top: 1.75vh; border: 2px solid;">
+        <div id="right-col-box-outer" class="col">
+            <div id="message-box-header">
                 <span id="message-box-header-name">Name</span><br>
                 <span id="online-status" style="display: none;">TODO</span>
             </div>
-            <div style="height: 64vh; margin-bottom: 2.5vh; border: 2px solid; overflow-y: scroll; display: flex; flex-direction: column-reverse;">
-                <div class="" id="message-box"></div>
+            <div id="message-box-outer">
+                <div id="message-box"></div>
             </div>
-            <div class="input-group" id="message-input" style="height: 6vh;">
+            <div class="input-group" id="message-input">
                 <input disabled class="form-control" type="text" id="message" placeholder="Send message">
-                <button class="input-group-text btn btn-dark" id="send-button" disabled
-                    style="height: 5.8vh; width: 5.7vw; margin-inline-start: 0.6vw;" onclick="sendMessage()">SEND</button>
+                <button class="input-group-text btn btn-dark" id="send-button" disabled onclick="sendMessage()">SEND</button>
             </div>
         </div>
     </div>
