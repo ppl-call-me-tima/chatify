@@ -2,6 +2,7 @@ cryptography
 boto3
 flask
 flask_apscheduler  # render.com inactivity prevention
+flask-socketio
 gunicorn
 pymysql
 python-dotenv
