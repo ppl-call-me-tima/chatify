@@ -4,7 +4,7 @@ import boto3
 from database import execute, execute_retrieve
 from datetime import datetime, timedelta
 from flask import Flask, jsonify, render_template, redirect, request, session, url_for
-from flask_socketio import SocketIO, join_room, leave_room, send
+from flask_socketio import SocketIO, join_room, leave_room, send, emit
 from helpers import *
 from markupsafe import escape
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -60,18 +60,42 @@ def join_a_room(room_code):
     session["room_code"] = room_code
     join_room(room_code)
     # send(f"{session.get('username')} joined room code {session.get('room_code')}", to=session.get('room_code'))
+
+
+@socketio.on("load_messages")
+def load_messages():
+    rows = execute_retrieve("""
+        SELECT sender.username AS msg_from_username, receiver.username AS msg_to_username, m.msg AS msg, m.timestamp AS timestamp
+        FROM user sender, user receiver, messages m
+        WHERE m.msg_from = sender.id
+        AND m.msg_to = receiver.id
+        AND m.friendship_id = :friendship_id
+        ORDER BY timestamp ASC;
+    """, {"friendship_id": session.get("room_code")})
+        
+    # print(rows)
+    emit("load_messages", rows, json=True)
     
 
 @socketio.on("message")
 def message(data):
-    # TODO: add msgs to db
     # TODO: Validate if msg_to user is actually a friend
     
     rows = execute_retrieve("SELECT id FROM user WHERE username = :username", 
                             {"username": data["msg_to"]})
     
-    execute("INSERT INTO messages (msg_from, msg_to, msg) VALUES (:msg_from, :msg_to, :msg)", 
-            {"msg_from": session.get("user_id"), "msg_to": rows[0]["id"], "msg": data["message"]})
+    timestamp = datetime.now().strftime(r"%Y%m%d%H%M%S%f")
+    
+    execute("""
+        INSERT INTO messages (friendship_id, msg_from, msg_to, msg, timestamp)
+        VALUES (:friendship_id, :msg_from, :msg_to, :msg, :timestamp)
+    """, {
+        "friendship_id": session.get("room_code"),
+        "msg_from": session.get("user_id"), 
+        "msg_to": rows[0]["id"], 
+        "msg": data["message"],
+        "timestamp": timestamp
+    })
     
     print(f"{session.get('username')} : {data['message']}")
     send(data["message"], to=session.get("room_code"))
