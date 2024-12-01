@@ -63,11 +63,18 @@ def join_a_room(room_code):
     
 
 @socketio.on("message")
-def message(message):
+def message(data):
     # TODO: add msgs to db
+    # TODO: Validate if msg_to user is actually a friend
     
-    print(f"{session.get('username')} : {message}")
-    send(message, to=session.get("room_code"))
+    rows = execute_retrieve("SELECT id FROM user WHERE username = :username", 
+                            {"username": data["msg_to"]})
+    
+    execute("INSERT INTO messages (msg_from, msg_to, msg) VALUES (:msg_from, :msg_to, :msg)", 
+            {"msg_from": session.get("user_id"), "msg_to": rows[0]["id"], "msg": data["message"]})
+    
+    print(f"{session.get('username')} : {data['message']}")
+    send(data["message"], to=session.get("room_code"))
 
 
 @app.route("/")

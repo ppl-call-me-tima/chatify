@@ -18,8 +18,12 @@ const joinRoom = (friendship_id, username) => {
 
 const sendMessage = () => {
     const message = document.getElementById("message").value;
+    const username = document.getElementById("message-box-header-name").textContent;
     console.log(message);
 
-    socketio.emit("message", message);
+    socketio.emit("message", {
+        msg_to: username,
+        message: message
+    });
     document.getElementById("message").value = "";
 }
