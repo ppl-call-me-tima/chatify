@@ -44,15 +44,16 @@ def connect():
 @socketio.on("disconnect")
 def disconnect():
     leave_room(session.get("room_code"))
+    session.pop("room_code")
 
 
 @socketio.on("join_a_room")
 def join_a_room(room_code):
     if (session.get("room_code")):
-        leave_room(room_code)
+        leave_room(session.get("room_code"))
     
     session["room_code"] = room_code
-    join_room(room_code)
+    join_room(session.get("room_code"))
 
 
 @socketio.on("load_messages")
