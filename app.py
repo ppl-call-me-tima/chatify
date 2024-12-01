@@ -97,8 +97,15 @@ def message(data):
         "timestamp": timestamp
     })
     
+    json_data = {
+        "msg_from": session.get("username"),
+        "msg_to": data["msg_to"],
+        "msg": data["message"],
+        "timestamp": timestamp
+    }
+    
     print(f"{session.get('username')} : {data['message']}")
-    send(data["message"], to=session.get("room_code"))
+    send(json_data, to=session.get("room_code"))
 
 
 @app.route("/")

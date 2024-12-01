@@ -2,8 +2,7 @@ var socketio = io();
 
 socketio.on("load_messages", (rows) => {
     for (const row of rows){
-        console.log(row);
-
+        // console.log(row);
         const messageBoxElement = document.getElementById("message-box")
         const messageDivElement = document.createElement("div");
         messageDivElement.innerHTML += `
@@ -13,15 +12,18 @@ socketio.on("load_messages", (rows) => {
     }
 });
 
-socketio.on("message", (message) => {
+socketio.on("message", (data) => {
+    // console.log(data);
     const messageBoxElement = document.getElementById("message-box");
     const messageDivElement = document.createElement("div");
-    messageDivElement.textContent = message;
+    messageDivElement.innerHTML += `
+        <strong>${data["msg_from"]}</strong> : ${data["msg"]} - ${data["timestamp"]}
+    `;
     messageBoxElement.appendChild(messageDivElement);
 });
 
 const joinRoom = (friendship_id, username) => {
-    console.log(friendship_id);
+    // console.log(friendship_id);
     document.getElementById("message-box").innerHTML = "";
     socketio.emit("join_a_room", friendship_id);
     document.getElementById("message").disabled = false;
@@ -34,7 +36,6 @@ const joinRoom = (friendship_id, username) => {
 const sendMessage = () => {
     const message = document.getElementById("message").value;
     const username = document.getElementById("message-box-header-name").textContent;
-    console.log(message);
 
     socketio.emit("message", {
         msg_to: username,
