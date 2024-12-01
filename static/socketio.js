@@ -1,3 +1,14 @@
+function updateSendButton() {
+    const messageInputElement = document.getElementById("message");
+    const sendButtonElement = document.getElementById("send-button");
+
+    if (messageInputElement.value === "") {
+        sendButtonElement.disabled = true;
+    } else {
+        sendButtonElement.disabled = false;
+    }
+}
+
 var socketio = io();
 
 socketio.on("load_messages", (rows) => {
@@ -18,7 +29,6 @@ const joinRoom = (friendship_id, username) => {
     socketio.emit("join_a_room", friendship_id);
     document.getElementById("message").disabled = false;
     document.getElementById("message").focus();
-    document.getElementById("send-button").disabled = false;
     document.getElementById("message-box-header-name").textContent = username;
     socketio.emit("load_messages");
 }

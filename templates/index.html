@@ -44,7 +44,7 @@ Homepage
                 <div id="message-box"></div>
             </div>
             <div class="input-group" id="message-input">
-                <input disabled class="form-control" type="text" id="message" placeholder="Send message">
+                <input oninput="updateSendButton()" disabled class="form-control" type="text" id="message" placeholder="Send message">
                 <button class="input-group-text btn btn-dark" id="send-button" disabled onclick="sendMessage()">SEND</button>
             </div>
         </div>
