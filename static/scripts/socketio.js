@@ -12,7 +12,6 @@ function updateSendButton() {
 var socketio = io();
 
 socketio.on("load_messages", (rows) => {
-    console.log(rows)
     for (const row of rows) {
         loadSingleMessageIntoMessageBox(row);
     }
