@@ -1,5 +1,5 @@
 import eventlet
-eventlet.monkey_patch()
+eventlet.monkey_patch(thread=True, socket=True, select=True)
 
 import os.path
 import boto3
