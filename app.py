@@ -1,7 +1,8 @@
-import os.path
-import boto3
 import eventlet
 eventlet.monkey_patch()
+
+import os.path
+import boto3
 
 from database import execute, execute_retrieve
 from datetime import datetime, timedelta
