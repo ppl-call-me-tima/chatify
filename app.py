@@ -17,7 +17,7 @@ from flask_apscheduler import APScheduler  # render.com inactivity prevention
 
 app = Flask(__name__)
 s3 = boto3.client("s3")
-socketio = SocketIO(app)
+socketio = SocketIO(app, async_mode="eventlet")
 
 scheduler = APScheduler()
 scheduler.init_app(app)
