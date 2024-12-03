@@ -1,5 +1,6 @@
 cryptography
 boto3
+eventlet
 flask
 flask_apscheduler  # render.com inactivity prevention
 flask-socketio

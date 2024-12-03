@@ -1,5 +1,7 @@
 import os.path
 import boto3
+import eventlet
+eventlet.monkey_patch()
 
 from database import execute, execute_retrieve
 from datetime import datetime, timedelta
@@ -434,4 +436,4 @@ def upload_pfp():
 
 
 if __name__ == "__main__":
-    socketio.run(app, debug=True)
+    socketio.run(app)
