@@ -1,5 +1,5 @@
-import eventlet
-eventlet.monkey_patch(thread=True, socket=True, select=True)
+# import eventlet
+# eventlet.monkey_patch(thread=True, socket=True, select=True)
 
 import os.path
 import boto3
@@ -17,7 +17,8 @@ from flask_apscheduler import APScheduler  # render.com inactivity prevention
 
 app = Flask(__name__)
 s3 = boto3.client("s3")
-socketio = SocketIO(app, async_mode="eventlet")
+# socketio = SocketIO(app, async_mode="eventlet")
+socketio = SocketIO(app)
 
 scheduler = APScheduler()
 scheduler.init_app(app)
