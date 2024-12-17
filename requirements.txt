@@ -1,10 +1,8 @@
 cryptography
 boto3
-eventlet
 flask
 flask_apscheduler  # render.com inactivity prevention
 flask-socketio
-gunicorn
 pymysql
 python-dotenv
 requests  # render.com inactivity prevention

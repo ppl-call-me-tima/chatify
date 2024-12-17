@@ -1,6 +1,3 @@
-# import eventlet
-# eventlet.monkey_patch(thread=True, socket=True, select=True)
-
 import os.path
 import boto3
 
@@ -438,4 +435,4 @@ def upload_pfp():
 
 
 if __name__ == "__main__":
-    socketio.run(app)
+    socketio.run(app, allow_unsafe_werkzeug=True, host="0.0.0.0")
