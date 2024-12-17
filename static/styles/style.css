@@ -5,9 +5,22 @@
   font-style: normal;
 }
 
+.geist-mono-400 {
+  font-family: "Geist Mono", monospace;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
 .geist-mono-500 {
   font-family: "Geist Mono", monospace;
   font-optical-sizing: auto;
   font-weight: 500;
   font-style: normal;
+}
+
+#sign-up-link-on-login {
+  font-size: 12px;
+  color: black;
+  text-decoration-color: black;
 }
