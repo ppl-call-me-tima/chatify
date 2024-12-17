@@ -24,3 +24,14 @@
   color: black;
   text-decoration-color: black;
 }
+
+#default-box {
+  width: 35vw;
+  margin: auto;
+  margin-bottom: 10vh;
+  text-align: center;
+}
+
+#default-message-box-display {
+  font-size: 4rem;
+}
