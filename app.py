@@ -7,6 +7,7 @@ from flask import Flask, jsonify, render_template, redirect, request, session, u
 from flask_socketio import SocketIO, join_room, leave_room, send, emit
 from helpers import *
 from markupsafe import escape
+from pytz import timezone
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 
@@ -33,6 +34,9 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 # Uploading Files
 app.config["MAX_CONTENT_LENGTH"] = 64 * 1000 * 1000  # 64MB
+#Time Zone
+IST = timezone("Asia/Kolkata")
+
 
 @socketio.on("connect")
 def connect():
@@ -86,7 +90,7 @@ def message(data):
     rows = execute_retrieve("SELECT id FROM user WHERE username = :username", 
                             {"username": data["msg_to"]})
     
-    timestamp = datetime.now().strftime(r"%Y%m%d%H%M%S%f")
+    timestamp = datetime.now(tz=IST).strftime(r"%Y%m%d%H%M%S%f")
     
     execute("""
         INSERT INTO messages (friendship_id, msg_from, msg_to, msg, timestamp)
@@ -414,7 +418,7 @@ def upload_pfp():
             return flash_and_redirect("File name should be less than 50 characters! GEEZ!", "profile", username=session.get("username"))        
         
         filename = secure_filename(file.filename)
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S%f")
+        timestamp = datetime.now(tz=IST).strftime("%Y%m%d_%H%M%S%f")
         name, ext = os.path.splitext(filename)
         filename = f"{name}_{timestamp}{ext}"
         
