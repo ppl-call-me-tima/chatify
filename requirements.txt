@@ -4,7 +4,6 @@ flask
 flask_apscheduler  # render.com inactivity prevention
 flask-socketio
 pymysql
-python-dotenv
 pytz
 requests  # render.com inactivity prevention
 sqlalchemy

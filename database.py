@@ -1,6 +1,4 @@
 import os
-
-from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
 
 # Creating engine
@@ -13,7 +11,6 @@ from sqlalchemy import create_engine, text
 # connect_string = f"mysql+pymysql://{username}:{password}@{host}/{dbname}?{option}"
 
 # SQLAlchemy + PyMySQL Connection from TiDB 
-load_dotenv()
 password = str(os.environ["DB_PASSWORD"])
 CA_PATH = r"/etc/secrets/isrgrootx1.pem"
 
