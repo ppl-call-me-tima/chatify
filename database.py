@@ -35,12 +35,12 @@ def execute_retrieve(query, parameters = None):
     """Returns a list of dicts with keys as the attribute name of the table
     Converts list of <class sqlalchemy.engine.row.Row> objects to list of dicts
     
-    In case or error during query execution, returns None.
+    In case or error during query execution, returns an Empty List.
     """
     
     with engine.connect() as conn:
 
-        rows = None
+        rows = []
         
         try:
             result = conn.execute(text(query), parameters or {})
