@@ -23,21 +23,34 @@ engine = create_engine(connect_string)
 
 
 def execute(query, parameters = None):
+    """In case of error during query execution, nothing is happened."""
+    
     with engine.connect() as conn:
-        conn.execute(text(query), parameters or {})
-        conn.commit()
+        
+        try:
+            conn.execute(text(query), parameters or {})
+            conn.commit()
+        except Exception as error:
+            print("Some error occurred during SQL execution:", error)
 
 
 def execute_retrieve(query, parameters = None):
     """Returns a list of dicts with keys as the attribute name of the table
-    
     Converts list of <class sqlalchemy.engine.row.Row> objects to list of dicts
+    
+    In case or error during query execution, returns None.
     """
     
     with engine.connect() as conn:
-        result = conn.execute(text(query), parameters or {})
-        fetched = result.all() #list of row objects
-        keys = result.keys()
-        rows = [dict(zip(keys, row_object)) for row_object in fetched]
+
+        rows = None
+        
+        try:
+            result = conn.execute(text(query), parameters or {})
+            fetched = result.all() #list of row objects
+            keys = result.keys()
+            rows = [dict(zip(keys, row_object)) for row_object in fetched]
+        except Exception as error:
+            print("Some error occured during SQL execution and retrieval:", error)
     
     return rows
