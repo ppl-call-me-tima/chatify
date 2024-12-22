@@ -10,10 +10,10 @@ Login
         <h1 class="display-1 mb-5">LOGIN</h1>
         <form class="d-flex flex-column align-items-center" action="/login" method="post">
             <div class="mb-3">
-                <input autofocus class="form-control" name="username" placeholder="Username" type="text">
+                <input {% if not username %} autofocus {% endif %} class="form-control" name="username" placeholder="Username" type="text" value="{{ username }}">
             </div>
             <div class="mb-3">
-                <input class="form-control" name="password" placeholder="Password" type="password">
+                <input {% if username %} autofocus {% endif %} class="form-control" name="password" placeholder="Password" type="password">
             </div>
             <div>
                 <input class="btn btn-primary" type="submit" value="Login">

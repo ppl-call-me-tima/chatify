@@ -10,13 +10,13 @@ Register
         <h1 class="display-1 mb-5">REGISTER</h1>
         <form class="d-flex flex-column align-items-center" action="/register" method="post">
             <div class="mb-3">
-                <input autofocus class="form-control" name="username" placeholder="Username" type="text">
+                <input {% if not username %} autofocus {% endif %} class="form-control" name="username" placeholder="Username" type="text" value="{{ username }}">
             </div>
             <div class="mb-3">
-                <input class="form-control" name="password" placeholder="Password" type="password">
+                <input {% if username and not password %} autofocus {% endif %} class="form-control" name="password" placeholder="Password" type="password" value="{{ password }}">
             </div>
             <div class="mb-3">
-                <input class="form-control" name="confirmation" placeholder="Re-enter Password" type="password">
+                <input {% if password %} autofocus {% endif %} class="form-control" name="confirmation" placeholder="Re-enter Password" type="password" value="{{ confirmation }}">
             </div>
             <div>
                 <input class="btn btn-primary" type="submit" value="Register">

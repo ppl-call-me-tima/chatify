@@ -328,12 +328,14 @@ def login():
             return flash_and_redirect("Enter name!", "login")
         
         if not password:
-            return flash_and_redirect("Enter password!", "login")
+            flash("Enter password!")
+            return render_template("login.html", username=username)
         
         rows = execute_retrieve("SELECT id, hash FROM user WHERE username = :username", {"username" : username})
                         
         if not rows or not check_password_hash(rows[0]["hash"], password):
-            return flash_and_redirect("Enter correct username / password!", "login")
+            flash("Enter correct username/password!")
+            return render_template("login.html", username=username)
         
         log_user_in(rows[0]["id"], username)
         return redirect(url_for("index"))
@@ -363,13 +365,16 @@ def register():
             return flash_and_redirect("Enter username!", "register")
         
         if not password:
-            return flash_and_redirect("Enter password!", "register")
+            flash("Enter password!")
+            return render_template("register.html", username=username)
         
         if not confirmation:
-            return flash_and_redirect("Re-enter password!", "register")
+            flash("Re-enter password!")
+            return render_template("register.html", username=username, password=password)
         
         if password != confirmation:
-            return flash_and_redirect("Passwords don't match!", "register")
+            flash("Passwords don't match!")
+            return render_template("register.html", username=username, password=password, confirmation=confirmation)
                 
         rows = execute_retrieve("SELECT id FROM user WHERE username = :username", {"username":username})
         
@@ -471,4 +476,4 @@ def upload_pfp():
 
 
 if __name__ == "__main__":
-    socketio.run(app, allow_unsafe_werkzeug=True, host="0.0.0.0")
+    socketio.run(app, allow_unsafe_werkzeug=True, host="0.0.0.0", debug=True)
