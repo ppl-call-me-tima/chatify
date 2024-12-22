@@ -72,15 +72,21 @@ def join_a_room(friend_id):
     
     # Load the previous messages
     rows = execute_retrieve("""
-        SELECT sender.username AS msg_from_username, 
-               receiver.username AS msg_to_username, 
-               m.msg AS msg, 
-               m.timestamp AS timestamp
-        FROM user sender, user receiver, messages m
-        WHERE m.msg_from = sender.id
-        AND m.msg_to = receiver.id
-        AND ((receiver.id = :user_id AND sender.id = :friend_id) OR (receiver.id = :friend_id AND sender.id = :user_id))
-        ORDER BY timestamp ASC;
+        SELECT 
+            sender.username AS msg_from_username, 
+            receiver.username AS msg_to_username, 
+            m.msg AS msg, 
+            m.timestamp AS timestamp
+        FROM 
+            user sender, 
+            user receiver, 
+            messages m
+        WHERE 
+            m.msg_from = sender.id
+            AND m.msg_to = receiver.id
+            AND ((receiver.id = :user_id AND sender.id = :friend_id) OR (receiver.id = :friend_id AND sender.id = :user_id))
+        ORDER BY 
+            timestamp ASC;
     """, {"user_id": session.get("user_id"), "friend_id": friend_id})
     
     for row in rows:
@@ -98,8 +104,16 @@ def message(data):
     timestamp = datetime.now(tz=IST).strftime(r"%Y%m%d%H%M%S%f")
     
     execute("""
-        INSERT INTO messages (msg_from, msg_to, msg, timestamp)
-        VALUES (:msg_from, :msg_to, :msg, :timestamp)
+        INSERT INTO messages (
+            msg_from, 
+            msg_to, 
+            msg, 
+            timestamp
+        ) VALUES (
+            :msg_from, 
+            :msg_to, 
+            :msg, 
+            :timestamp)
     """, {
         "msg_from": session.get("user_id"), 
         "msg_to": rows[0]["friend_id"], 
@@ -123,7 +137,11 @@ def index():
     # TODO: Implement home page
     
     rows = execute_retrieve("""
-        SELECT f.id AS friendship_id, f.friend_id, user.username, user.pfp_filename
+        SELECT 
+            f.id AS friendship_id, 
+            f.friend_id, 
+            user.username, 
+            user.pfp_filename
         FROM
         (
             SELECT friendships.id,
@@ -147,7 +165,11 @@ def myfriends():
     # TODO: Move query to helper function
     
     rows = execute_retrieve("""
-        SELECT f.id AS friendship_id, f.friend_id, user.username, user.pfp_filename
+        SELECT 
+            f.id AS friendship_id, 
+            f.friend_id, 
+            user.username, 
+            user.pfp_filename
         FROM
         (
             SELECT friendships.id,
@@ -189,10 +211,16 @@ def friendrequests():
     # TODO: Move query to helper function
     
     rows = execute_retrieve("""
-        SELECT friend_requests.id AS req_id, user.username, user.pfp_filename
-        FROM friend_requests, user
-        WHERE friend_requests.req_to = :to
-        AND friend_requests.req_from = user.id;
+        SELECT 
+            friend_requests.id AS req_id, 
+            user.username, 
+            user.pfp_filename
+        FROM 
+            friend_requests, 
+            user
+        WHERE 
+            friend_requests.req_to = :to 
+            AND friend_requests.req_from = user.id;
     """, {"to": session.get("user_id")})
     
     return render_template("friendrequests.html", rows=rows)
