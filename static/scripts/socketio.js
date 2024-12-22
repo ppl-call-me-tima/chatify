@@ -12,6 +12,7 @@ function updateSendButton() {
 var socketio = io();
 
 socketio.on("load_messages", (rows) => {
+    document.getElementById("message-box").innerHTML = "";
     for (const row of rows) {
         loadSingleMessageIntoMessageBox(row);
     }
@@ -21,9 +22,8 @@ socketio.on("message", (data) => {
     loadSingleMessageIntoMessageBox(data);
 });
 
-const joinRoom = (friendship_id, username) => {
-    document.getElementById("message-box").innerHTML = "";
-    socketio.emit("join_a_room", friendship_id);
+const joinRoom = (friend_id, username) => {
+    socketio.emit("join_a_room", parseInt(friend_id));
     document.getElementById("message").disabled = false;
     document.getElementById("message").focus();
     document.getElementById("message-box-header-name").textContent = username;

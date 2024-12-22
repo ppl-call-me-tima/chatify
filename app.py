@@ -52,31 +52,36 @@ def disconnect():
 
 
 @socketio.on("join_a_room")
-def join_a_room(friendship_id):
+def join_a_room(friend_id):
     if (session.get("room_code")):
         leave_room(session.get("room_code"))
-        
-    rows = execute_retrieve("""
-        SELECT (low_friend_id = :user_id OR high_friend_id = :user_id) AS is_part_of_friendship
-        FROM friendships
-        WHERE id = :friendship_id
-    """, {"user_id": session.get("user_id"), "friendship_id": friendship_id})
     
-    if len(rows) == 0 or not int(rows[0]["is_part_of_friendship"]):
+    low, high = sorted([session.get("user_id"), friend_id])
+    
+    rows = execute_retrieve("""
+        SELECT id AS friendship_id
+        FROM friendships
+        WHERE (low_friend_id = :low AND high_friend_id = :high);
+    """, {"low": low, "high": high})
+    
+    if len(rows) == 0:
         return
-        
-    session["room_code"] = friendship_id
+    
+    session["room_code"] = rows[0]["friendship_id"]
     join_room(session.get("room_code"))
     
     # Load the previous messages
     rows = execute_retrieve("""
-        SELECT sender.username AS msg_from_username, receiver.username AS msg_to_username, m.msg AS msg, m.timestamp AS timestamp
+        SELECT sender.username AS msg_from_username, 
+               receiver.username AS msg_to_username, 
+               m.msg AS msg, 
+               m.timestamp AS timestamp
         FROM user sender, user receiver, messages m
         WHERE m.msg_from = sender.id
         AND m.msg_to = receiver.id
-        AND m.friendship_id = :friendship_id
+        AND ((receiver.id = :user_id AND sender.id = :friend_id) OR (receiver.id = :friend_id AND sender.id = :user_id))
         ORDER BY timestamp ASC;
-    """, {"friendship_id": session.get("room_code")})
+    """, {"user_id": session.get("user_id"), "friend_id": friend_id})
     
     for row in rows:
         timestamp = row["timestamp"]
@@ -87,18 +92,17 @@ def join_a_room(friendship_id):
 
 @socketio.on("message")
 def message(data):  
-    rows = execute_retrieve("SELECT id FROM user WHERE username = :username", 
+    rows = execute_retrieve("SELECT id AS friend_id FROM user WHERE username = :username", 
                             {"username": data["msg_to"]})
     
     timestamp = datetime.now(tz=IST).strftime(r"%Y%m%d%H%M%S%f")
     
     execute("""
-        INSERT INTO messages (friendship_id, msg_from, msg_to, msg, timestamp)
-        VALUES (:friendship_id, :msg_from, :msg_to, :msg, :timestamp)
+        INSERT INTO messages (msg_from, msg_to, msg, timestamp)
+        VALUES (:msg_from, :msg_to, :msg, :timestamp)
     """, {
-        "friendship_id": session.get("room_code"),
         "msg_from": session.get("user_id"), 
-        "msg_to": rows[0]["id"], 
+        "msg_to": rows[0]["friend_id"], 
         "msg": data["message"],
         "timestamp": timestamp
     })
@@ -439,4 +443,4 @@ def upload_pfp():
 
 
 if __name__ == "__main__":
-    socketio.run(app, allow_unsafe_werkzeug=True, host="0.0.0.0")
+    socketio.run(app, allow_unsafe_werkzeug=True, host="0.0.0.0", debug=True)
