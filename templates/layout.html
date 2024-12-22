@@ -23,7 +23,7 @@
 	<link rel="stylesheet" href="../static/styles/index_style.css">
 
 	<!-- socketio -->
-	 {% block socketio_header %}{% endblock %}
+	{% block socketio_header %}{% endblock %}
 
 	<!-- title -->
 	<title>{% block title %}{% endblock %}</title>
@@ -97,9 +97,24 @@
 		{% block main %}{% endblock %}
 	</main>
 
-	<footer>
-
-	</footer>
+	<div class="container">
+		<footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+			<div class="col md-4 d-flex align-items-center">
+				<a href="/" class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1">
+					<img src="../static/icons/logo.png" alt="Chatter Logo" height="23">
+				</a>
+				<span class="text-muted">© 2024 Amit Upadhyay</span>
+				<ul class="nav col-md-10 justify-content-end list-unstyled d-flex">
+					<li class="ms-3 pe-3 border-end">
+						<a target="_blank" href="https://github.com/ppl-call-me-tima/chatify" class="text-muted">
+							<img src="../static/icons/github.png" alt="github icon" height="30px">
+						</a>
+					</li>
+					<li class="ms-3"><a href="#" class=" text-muted text-decoration-none">Report a Bug</a></li>
+				</ul>
+			</div>
+		</footer>
+	</div>
 </body>
 
 </html>
