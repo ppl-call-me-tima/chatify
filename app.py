@@ -15,7 +15,6 @@ from flask_apscheduler import APScheduler  # render.com inactivity prevention
 
 app = Flask(__name__)
 s3 = boto3.client("s3")
-# socketio = SocketIO(app, async_mode="eventlet")
 socketio = SocketIO(app)
 
 scheduler = APScheduler()
@@ -29,9 +28,6 @@ app.jinja_env.globals.update(url_for_pfp=url_for_pfp)
 # Permanent Session
 app.secret_key = os.environ["APP_KEY"].encode("utf-8")
 app.permanent_session_lifetime = timedelta(minutes=69)
-# Database
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 # Uploading Files
 app.config["MAX_CONTENT_LENGTH"] = 64 * 1000 * 1000  # 64MB
 #Time Zone
@@ -133,9 +129,7 @@ def message(data):
 
 @app.route("/")
 @login_required
-def index():
-    # TODO: Implement home page
-    
+def index():   
     rows = execute_retrieve("""
         SELECT 
             f.id AS friendship_id, 
@@ -160,10 +154,7 @@ def index():
 
 @app.route("/friends/myfriends")
 @login_required
-def myfriends():
-    
-    # TODO: Move query to helper function
-    
+def myfriends():    
     rows = execute_retrieve("""
         SELECT 
             f.id AS friendship_id, 
@@ -206,10 +197,7 @@ def remove():
 
 @app.route("/friends/friendrequests")
 @login_required
-def friendrequests():
-    
-    # TODO: Move query to helper function
-    
+def friendrequests():    
     rows = execute_retrieve("""
         SELECT 
             friend_requests.id AS req_id, 
@@ -395,8 +383,6 @@ def register():
 @app.route("/profile/<username>")
 @login_required
 def profile(username):
-    # TODO : implement profile page
-    
     username = str(escape(username))
     
     if username == session.get("username"):
