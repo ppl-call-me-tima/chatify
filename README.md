@@ -23,7 +23,7 @@ Chatify is an online messaging web app made using Flask and Socket.IO wherein yo
 3. AWS-S3
 4. Flask-SocketIO
 
-## Database Schema (refer `./database/schemas.sql` for scripts)
+## Database Schema (refer `./database_ref/schemas.sql` for scripts)
 <img src="./database_ref/schemas.png" alt="ER Diagram" height="325">
 
 ## How to Contribute
