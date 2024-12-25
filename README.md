@@ -24,17 +24,22 @@ Chatify is an online messaging web app made using Flask and Socket.IO wherein yo
 4. Flask-SocketIO
 
 ## Database Schema (refer `./database/schemas.sql` for scripts)
-<img src="./database/schemas.png" alt="ER Diagram" height="400">
+<img src="./database/schemas.png" alt="ER Diagram" height="350">
 
 ## How to Contribute
 
-### 1. Clone the repository:
+### 1. Clone the Repository:
     
 ```bash
 git clone https://github.com/ppl-call-me-tima/chatify.git
 ```
 
-### 2. Setting Up the Database Connection
+### 2. Install the Requirements
+```bash
+pip install -r requirements.txt
+```
+
+### 3. Setting Up the Database Connection
 The default method used for connection is using a cloud MySQL connection provider - TiDB. But to configure for a local MySQL connection, one must alter the connection string required for an SQLAlchemy + PyMySQL connection. The connection string is of the form:
 
 ```py
@@ -63,7 +68,7 @@ Please re-configure the CA_PATH variable inside `database.py` correctly as it ma
 </ol>
 
 
-### 3. Setting Up Environment Variables (refer `.env.example`)
+### 4. Setting Up Environment Variables (refer `.env.example`)
 
 1. <strong>App Key:</strong> Generate a random secret app key that is required for Flask Sessions.
 
@@ -88,5 +93,5 @@ Please re-configure the CA_PATH variable inside `database.py` correctly as it ma
     - set by the user in case of using a local MySQL connection
     - provided by the cloud MySQL connection provider (see _Setting Up the Database Connection - Using TiDB_)
 
-### 4. Setting Up Secret File (optional, if using TiDB Connection)
-Download the CA Certificate from the `Connecting to Cluster` menu of the TiDB dashboard and add the its path as parameter inside the connection string as mention in _Setting Up the Database Connection with TiDB_.
+### 5. Setting Up Secret File (optional, if using TiDB Connection)
+Download the CA Certificate from the `Connecting to Cluster` menu of the TiDB dashboard and add its path as the required parameter inside the connection string as mention in _Setting Up the Database Connection with TiDB_.
