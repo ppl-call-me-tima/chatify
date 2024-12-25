@@ -24,7 +24,7 @@ Chatify is an online messaging web app made using Flask and Socket.IO wherein yo
 4. Flask-SocketIO
 
 ## Database Schema (refer `./database/schemas.sql` for scripts)
-<img src="./database/schemas.png" alt="ER Diagram" height="350">
+<img src="./database_ref/schemas.png" alt="ER Diagram" height="325">
 
 ## How to Contribute
 
@@ -32,10 +32,13 @@ Chatify is an online messaging web app made using Flask and Socket.IO wherein yo
     
 ```bash
 git clone https://github.com/ppl-call-me-tima/chatify.git
+cd chatify
 ```
 
-### 2. Install the Requirements
+### 2. Create a Virtual Environment and Install the Requirements
 ```bash
+py -3 -m venv .venv
+.venv/Scripts/activate
 pip install -r requirements.txt
 ```
 
