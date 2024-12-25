@@ -19,7 +19,7 @@ Chatify is an online messaging web app made using Flask and Socket.IO wherein yo
 
 ## Frameworks / Technologies Used
 1. Flask
-2. MySQL
+2. SQLAlchemy + PyMySQL
 3. AWS-S3
 4. Flask-SocketIO
 
