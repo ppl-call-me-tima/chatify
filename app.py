@@ -367,7 +367,7 @@ def register():
         rows = execute_retrieve("SELECT id FROM user WHERE username = :username", {"username":username})
         
         if rows:
-            return flash_and_redirect("Username already taken!", "login")
+            return flash_and_redirect("Username already taken!", "register")
                 
         execute("INSERT INTO user (username, hash) VALUES (:username, :hash)", 
                 {"username":username, "hash":generate_password_hash(password)})
