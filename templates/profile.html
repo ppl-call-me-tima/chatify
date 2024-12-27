@@ -5,14 +5,14 @@ Profile
 {% endblock %}
 
 {% block main %}
-<div class="row">
+<div class="row container mx-auto my-4">
     <div class="col-auto ms-2">
         <div class="card" style="display: inline-block">
-            <img src="{{ url_for_pfp(row.pfp_filename) }}" alt="profile photo" style="height: 430px; width: 430px;">
+            <img src="{{ url_for_pfp(row.pfp_filename) }}" alt="profile photo" style="height: 55vh; width: 25vw;">
             {% if self_profile %}
             <div class="card-body">
                 <form action="/upload_pfp" enctype="multipart/form-data" method="post">
-                    <input class="form-control form-control-lg" name="upload_pfp" type="file">
+                    <input class="form-control form-control-lg" name="upload_pfp" type="file" style="width: 23vw">
                     <input class="form-control form-control-lg" type="submit" value="Change Profile Photo">
                 </form>
                 <form action="/remove_pfp">
