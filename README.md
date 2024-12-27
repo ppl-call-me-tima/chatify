@@ -1,4 +1,6 @@
 # Chatify
+#### Video Demo (for CS50x Final Project Submission): https://youtu.be/5UtVbLOH5nQ
+
 Chatify is an online messaging web app made using Flask and Socket.IO wherein you can create friends and chat with them live!
 
 ## Features
