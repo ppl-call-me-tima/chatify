@@ -149,7 +149,7 @@ def index():
         JOIN user ON user.id = f.friend_id
     """, {"user_id": session.get("user_id")})
     
-    return render_template("index.html", rows=rows)
+    return render_template("index.html", rows=rows, index=True)
 
 
 @app.route("/friends/myfriends")

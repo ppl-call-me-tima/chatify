@@ -13,6 +13,8 @@ var socketio = io();
 
 socketio.on("load_messages", (rows) => {
     document.getElementById("message-box").innerHTML = "";
+    document.getElementById("message-box").style.height = "auto";
+
     for (const row of rows) {
         loadSingleMessageIntoMessageBox(row);
     }
@@ -26,7 +28,17 @@ const joinRoom = (friend_id, username) => {
     socketio.emit("join_a_room", parseInt(friend_id));
     document.getElementById("message").disabled = false;
     document.getElementById("message").focus();
-    document.getElementById("message-box-header-name").textContent = username;
+    document.getElementById("message-box-header").style.borderBottom = "1px solid black";
+
+    var anchor = document.createElement("a");
+    anchor.id = "message-box-header-name";
+    anchor.href = `/profile/${username}`;
+    anchor.innerText = username;
+    anchor.style.textDecoration = "none";
+    anchor.style.color = "black";
+
+    document.getElementById("message-box-header").innerHTML = "";
+    document.getElementById("message-box-header").appendChild(anchor);
 }
 
 const sendMessage = () => {

@@ -31,7 +31,7 @@
 
 <body>
 	<!-- nav -->
-	<nav class="navbar navbar-expand-lg p-3 mb-2 bg-dark-subtle text-dark-emphasis">
+	<nav class="navbar navbar-expand-lg p-3 bg-dark-subtle text-dark-emphasis">
 		<div class="container-fluid">
 
 			<!-- left part -->
@@ -97,6 +97,7 @@
 		{% block main %}{% endblock %}
 	</main>
 
+	{% if not index %}
 	<div class="container">
 		<footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
 			<div class="col md-4 d-flex align-items-center">
@@ -115,6 +116,7 @@
 			</div>
 		</footer>
 	</div>
+	{% endif %}
 </body>
 
 </html>

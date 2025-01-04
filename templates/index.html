@@ -12,42 +12,47 @@ Homepage
 
 {% block main %}
 
-<div id="outer-box" class="container mt-4">
-    <div class="row">
-        <div id="left-col-box-outer" class="col-4">
-            <div id="left-col-box-inner" class="my-3">
-                {% for row in rows %}
-                <button id="friend-button" class="btn my-1 p-0"
-                    onclick="joinRoom('{{ row.friend_id }}', '{{ row.username }}')">
-                    <div class="card mx-1 my-0 px-3 py-3">
-                        <div class="row">
-                            <div class="col-2">
-                                <img src="{{ url_for_pfp(row.pfp_filename) }}" alt="pfp" height="40px" width="40px"
-                                    style="border-radius: 15px;">
-                            </div>
-                            <div class="col">
-                                <h4><a class="link-offset-2-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover text-dark"
-                                        href="/profile/{{ row.username }}">{{ row.username }}</a></h4>
-                            </div>
+<div id="outer-box" class="">
+    <div id="outer-row" class="row">
+        <div id="left-col-box-outer" class="col-4 py-2 px-2">
+            {% if not rows %}
+            <div id="no-friends-box" class="d-flex my-auto">
+                <a href="friends/sendfriendrequests"
+                    class="geist-mono-500 link-dark link-offset-3-hover link-underline-opacity-0 link-underline-opacity-75-hover">New
+                    to Chatify? Add friends here!</a>
+            </div>
+            {% endif %}
+
+            {% for row in rows %}
+            <button id="friend-button" class="btn p-0" onclick="joinRoom('{{ row.friend_id }}', '{{ row.username }}')">
+                <div id="chat-card" class="px-3 py-3">
+                    <div class="row">
+                        <div class="col-2">
+                            <img src="{{ url_for_pfp(row.pfp_filename) }}" alt="pfp" height="40px" width="40px"
+                                style="border-radius: 15px;">
+                        </div>
+                        <div class="col">
+                            <h4><a class="link-offset-2-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover text-dark"
+                                    href="/profile/{{ row.username }}">{{ row.username }}</a></h4>
                         </div>
                     </div>
-                </button>
-                {% endfor %}
-            </div>
+                </div>
+            </button>
+            {% endfor %}
         </div>
-        <div id="right-col-box-outer" class="col">
-            <div id="message-box-header">
+        <div id="right-col-box-outer" class="col p-0">
+            <div id="message-box-header" class="geist-mono-500">
                 <span id="message-box-header-name"></span><br>
-                <span id="online-status" style="display: none;">TODO</span>
             </div>
-            <div id="message-box-outer">
+            <div id="message-box-outer" class="px-2 py-1">
                 <div id="message-box">
-                    <div class="geist-mono-400" id="default-box">
-                        <span id="default-message-box-display">SELECT A FRIEND TO START CHATTING</span>
+                    <div id="default-box">
+                        <span id="default-message-box-display" class="geist-mono-400">SELECT A FRIEND TO START
+                            CHATTING</span>
                     </div>
                 </div>
             </div>
-            <div class="input-group" id="message-input">
+            <div id="message-input-box" class="input-group">
                 <input oninput="updateSendButton()" disabled class="form-control" type="text" id="message"
                     placeholder="Send message">
                 <button class="input-group-text btn btn-dark" id="send-button" disabled

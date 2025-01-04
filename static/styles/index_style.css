@@ -1,44 +1,60 @@
 #outer-box {
-    height: 80vh;
-    width: 80vw;
-    border: 1px solid;
+    height: 88vh;
+}
+
+#outer-row {
+    margin-left: 0px;
+    height: 100%;
+    width: 100%;
 }
 
 #left-col-box-outer {
-    height: 80vh;
-    border: 1px solid;
+    height: 100%;
+    overflow-y: scroll;
+    scrollbar-width: none;
+    border-right: 1px solid grey;
 }
 
-#left-col-box-inner {
-    height: 75vh;
-    overflow-y: scroll;
+#no-friends-box{
+    font-size: large;
+    padding-top: 50%;
+    padding-left: 10%;
 }
 
 #friend-button {
-    width: 23vw;
+    width: 100%;
 }
 
-#right-col-box-outer {
-    height: 80vh;
-    border: 1px solid
+#chat-card {
+    height: 11vh;
+    border-bottom: 1px solid lightgrey;
 }
 
 #message-box-header {
-    margin-top: 1.75vh;
-    border: 2px solid;
+    padding-left: 1%;
+    font-size: 1.5rem;
 }
 
 #message-box-outer {
-    height: 64vh;
-    margin-bottom: 2.5vh;
-    border: 2px solid;
+    height: 74vh;
     overflow-y: scroll;
     display: flex;
     flex-direction: column-reverse;
 }
 
+#message-box {
+    height: 75%;
+}
+
+#message-input-box {
+    padding: 1.28% 1.5%;
+    height: auto;
+    width: auto;
+    border-top: 1px solid grey;
+}
+
 #send-button {
     height: 5.8vh;
-    width: 5.7vw;
+    width: 10%;
     margin-inline-start: 0.4vw;
 }
