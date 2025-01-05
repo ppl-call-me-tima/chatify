@@ -1,8 +1,31 @@
 document.getElementById("message").addEventListener("keydown", (event) => {
-    if (event.code == "Enter"){
+    if (event.code == "Enter") {
         sendMessage();
     }
+    else if (event.code == "Escape") {
+        resetMessageBox();
+    }
 });
+
+function resetMessageBox() {
+    document.getElementById("message").value = "";
+    document.getElementById("message").disabled = true;
+    document.getElementById("send-button").disabled = true;
+
+    document.getElementById("message-box-header").style.borderBottom = "none";
+    document.getElementById("message-box-header").innerHTML = `<br>`;
+
+
+    document.getElementById("message-box-outer").innerHTML = `
+        <div id="message-box">
+            <div id="default-box">
+                <span id="default-message-box-display" class="geist-mono-400">
+                    SELECT A FRIEND TO START CHATTING
+                </span>
+            </div>
+        </div>
+    `;
+}
 
 function updateSendButton() {
     const messageInputElement = document.getElementById("message");

@@ -27,13 +27,14 @@ Homepage
             <button id="friend-button" class="btn p-0" onclick="joinRoom('{{ row.friend_id }}', '{{ row.username }}')">
                 <div id="chat-card" class="px-3 py-3">
                     <div class="row">
-                        <div class="col-2">
-                            <img src="{{ url_for_pfp(row.pfp_filename) }}" alt="pfp" height="40px" width="40px"
-                                style="border-radius: 15px;">
+                        <div class="col-2"><a
+                                class="link-offset-2-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover text-dark"
+                                href="/profile/{{ row.username }}">
+                                <img src="{{ url_for_pfp(row.pfp_filename) }}" alt="pfp" height="50px" width="50px"
+                                    style="border-radius: 25px;" style="border-radius: 15px;"></a>
                         </div>
                         <div class="col">
-                            <h4><a class="link-offset-2-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover text-dark"
-                                    href="/profile/{{ row.username }}">{{ row.username }}</a></h4>
+                            <h4>{{ row.username }}</h4>
                         </div>
                     </div>
                 </div>
@@ -42,13 +43,14 @@ Homepage
         </div>
         <div id="right-col-box-outer" class="col p-0">
             <div id="message-box-header" class="geist-mono-500">
-                <span id="message-box-header-name"></span><br>
+                <br>
             </div>
             <div id="message-box-outer" class="px-2 py-1">
                 <div id="message-box">
                     <div id="default-box">
-                        <span id="default-message-box-display" class="geist-mono-400">SELECT A FRIEND TO START
-                            CHATTING</span>
+                        <span id="default-message-box-display" class="geist-mono-400">
+                            SELECT A FRIEND TO START CHATTING
+                        </span>
                     </div>
                 </div>
             </div>
