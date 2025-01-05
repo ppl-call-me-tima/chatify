@@ -2,7 +2,10 @@ document.getElementById("message").addEventListener("keydown", (event) => {
     if (event.code == "Enter") {
         sendMessage();
     }
-    else if (event.code == "Escape") {
+});
+
+document.addEventListener("keydown", (event) => {
+    if (event.code == "Escape") {
         resetMessageBox();
     }
 });
