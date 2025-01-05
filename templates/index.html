@@ -25,13 +25,14 @@ Homepage
 
             {% for row in rows %}
             <button id="friend-button" class="btn p-0" onclick="joinRoom('{{ row.friend_id }}', '{{ row.username }}')">
-                <div id="chat-card" class="px-3 py-3">
+                <div id="chat-card-{{ row.friend_id }}" class="px-3 py-3">
                     <div class="row">
-                        <div class="col-2"><a
-                                class="link-offset-2-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover text-dark"
+                        <div class="col-2">
+                            <a class="link-offset-2-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover text-dark"
                                 href="/profile/{{ row.username }}">
                                 <img src="{{ url_for_pfp(row.pfp_filename) }}" alt="pfp" height="50px" width="50px"
-                                    style="border-radius: 25px;" style="border-radius: 15px;"></a>
+                                    style="border-radius: 25px;" style="border-radius: 15px;">
+                            </a>
                         </div>
                         <div class="col">
                             <h4>{{ row.username }}</h4>
@@ -55,8 +56,8 @@ Homepage
                 </div>
             </div>
             <div id="message-input-box" class="input-group">
-                <input oninput="updateSendButton()" disabled autocomplete="off" class="form-control" type="text" id="message"
-                    placeholder="Send message">
+                <input oninput="updateSendButton()" disabled autocomplete="off" class="form-control" type="text"
+                    id="message" placeholder="Send message">
                 <button class="input-group-text btn btn-dark" id="send-button" disabled
                     onclick="sendMessage()">SEND</button>
             </div>

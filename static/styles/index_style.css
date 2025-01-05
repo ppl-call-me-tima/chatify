@@ -23,10 +23,6 @@
 
 #friend-button {
     width: 100%;
-}
-
-#chat-card {
-    height: 11vh;
     border-bottom: 1px solid lightgrey;
 }
 

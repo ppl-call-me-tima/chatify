@@ -1,3 +1,5 @@
+var currentOpenedChatId = "";
+
 document.getElementById("message").addEventListener("keydown", (event) => {
     if (event.code == "Enter") {
         sendMessage();
@@ -11,6 +13,11 @@ document.addEventListener("keydown", (event) => {
 });
 
 function resetMessageBox() {
+    if (currentOpenedChatId.length !== 0) {
+        document.getElementById(`chat-card-${currentOpenedChatId}`).style.backgroundColor = "white";
+        currentOpenedChatId = "";
+    }
+
     document.getElementById("message").value = "";
     document.getElementById("message").disabled = true;
     document.getElementById("send-button").disabled = true;
@@ -58,6 +65,14 @@ socketio.on("message", (data) => {
 
 const joinRoom = (friend_id, username) => {
     socketio.emit("join_a_room", parseInt(friend_id));
+
+    if (currentOpenedChatId.length !== 0) {
+        document.getElementById(`chat-card-${currentOpenedChatId}`).style.backgroundColor = "white";
+    }
+
+    currentOpenedChatId = friend_id;
+    
+    document.getElementById(`chat-card-${currentOpenedChatId}`).style.backgroundColor = "rgb(230, 230, 230)";
     document.getElementById("message").disabled = false;
     document.getElementById("message").focus();
     document.getElementById("message-box-header").style.borderBottom = "1px solid black";
