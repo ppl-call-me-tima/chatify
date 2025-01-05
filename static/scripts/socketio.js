@@ -1,3 +1,9 @@
+document.getElementById("message").addEventListener("keydown", (event) => {
+    if (event.code == "Enter"){
+        sendMessage();
+    }
+});
+
 function updateSendButton() {
     const messageInputElement = document.getElementById("message");
     const sendButtonElement = document.getElementById("send-button");
