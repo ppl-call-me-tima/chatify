@@ -152,6 +152,51 @@ def index():
     return render_template("index.html", rows=rows, index=True)
 
 
+@app.route("/change_password", methods=["GET", "POST"])
+@login_required
+def change_password():
+    if request.method == "POST":
+        old = request.form.get("old")
+        new = request.form.get("new")
+        confirmation = request.form.get("confirmation")
+        
+        if not old:
+            flash("Please enter old password!")
+            return render_template("change_password.html")
+
+        if not new:
+            flash("Please enter new password!")
+            return render_template("change_password.html", old=old)
+        
+        if not confirmation:
+            flash("Please enter the new password again!")
+            return render_template("change_password.html", old=old, new=new)
+        
+        
+        rows = execute_retrieve("SELECT hash FROM user WHERE id = :id", {"id": session.get("user_id")})
+        
+        if (not check_password_hash(rows[0]["hash"], old)):
+            flash("That is not your correct old password!")
+            return render_template("change_password.html", new=new, confirmation=confirmation)
+        
+        if new != confirmation:
+            flash("New passwords don't match!")
+            return render_template("change_password.html", old=old, new=new, confirmation=confirmation)
+        
+        execute("""
+            UPDATE user 
+            SET hash = :hash 
+            WHERE id = :id
+        """, {
+            "hash": generate_password_hash(new), 
+            "id": session.get("user_id")
+        })
+        
+        return flash_and_redirect("Password changed successfully!", "change_password")
+    else:
+        return render_template("change_password.html")
+
+
 @app.route("/friends/myfriends")
 @login_required
 def myfriends():    

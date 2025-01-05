@@ -35,3 +35,12 @@
 #default-message-box-display {
   font-size: 4rem;
 }
+
+#main-box{
+  height: 70vh;
+}
+
+#inner-box{
+  position: relative;
+  top: 25%;
+}
