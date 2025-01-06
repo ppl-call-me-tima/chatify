@@ -5,52 +5,54 @@ Profile
 {% endblock %}
 
 {% block main %}
-<div class="row container mx-auto my-4">
-    <div class="col-auto ms-2">
-        <div class="card" style="display: inline-block">
-            <img src="{{ url_for_pfp(row.pfp_filename) }}" alt="profile photo" style="height: 55vh; width: 25vw;">
-            {% if self_profile %}
-            <div class="card-body">
-                <form action="/upload_pfp" enctype="multipart/form-data" method="post">
-                    <input class="form-control form-control-lg" name="upload_pfp" type="file" style="width: 23vw">
-                    <input class="form-control form-control-lg" type="submit" value="Change Profile Photo">
-                </form>
-                <form action="/remove_pfp">
-                    <input class="form-control form-control-lg" type="submit" value="Remove">
-                </form>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-    
-    <div class="col geist-mono-500">
-        <div class="row mb-3">
-            <div>
-                <h6>@{{ row.username }}</h6>
-                <span id="name" class="h1">{{ row.name }}</span>&emsp;
-
+<div id="main-box" class="container mt-4">
+    <div class="row container mx-auto">
+        <div class="col-auto ms-2">
+            <div id="profile-card" class="card p-2">
+                <img src="{{ url_for_pfp(row.pfp_filename) }}" alt="profile photo" style="height: 48vh; border-radius: 4px; aspect-ratio: 1/1;">
                 {% if self_profile %}
-                <button class="btn p-0" id="name-edit-button" onclick="inlineEdit('name')">
-                    <img src="../static/icons/edit.png" alt="edit icon" height="25px">
-                </button>
+                <div class="card-body">
+                    <form action="/upload_pfp" enctype="multipart/form-data" method="post">
+                        <input class="form-control" name="upload_pfp" type="file">
+                        <input class="form-control" type="submit" value="Change Profile Photo">
+                    </form>
+                    <form action="/remove_pfp">
+                        <input class="form-control" type="submit" value="Remove">
+                    </form>
+                </div>
                 {% endif %}
             </div>
         </div>
-        
-        <div class="row">
-            <div>
-                <span id="bio" class="geist-mono-500 h6 me-3">{{ row.bio }}</span>
 
-                {% if self_profile %}
-                <button class="btn p-0" id="bio-edit-button" onclick="inlineEdit('bio')">
-                    <img src="../static/icons/edit.png" alt="edit icon" height="15px">
-                </button>
-                {% endif %}
+        <div class="col geist-mono-500">
+            <div class="row mb-3">
+                <div>
+                    <h6>@{{ row.username }}</h6>
+                    <span id="name" class="h1">{{ row.name }}</span>&emsp;
+
+                    {% if self_profile %}
+                    <button class="btn p-0" id="name-edit-button" onclick="inlineEdit('name')">
+                        <img src="../static/icons/edit.png" alt="edit icon" height="25px">
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div>
+                    <span id="bio" class="geist-mono-500 h6 me-3">{{ row.bio }}</span>
+
+                    {% if self_profile %}
+                    <button class="btn p-0" id="bio-edit-button" onclick="inlineEdit('bio')">
+                        <img src="../static/icons/edit.png" alt="edit icon" height="15px">
+                    </button>
+                    {% endif %}
+                </div>
             </div>
         </div>
+
+        <div class="col-4" id="dummy"></div>
     </div>
-    
-    <div class="col-4" id="dummy"></div>
 </div>
 
 <script src="../static/scripts/script.js"></script>

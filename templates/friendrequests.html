@@ -5,20 +5,22 @@ Friend Requests
 {% endblock %}
 
 {% block main %}
-<div class="d-flex mx-auto my-5" style="height: auto; width: 50vw">
-    <div style="height:70vh ;width: 50vw; overflow-y: scroll;">
-        {% if rows|length == 0 %}
-        You have no pending friend requests
-        {% else %}
+<div id="main-box" class="container mt-4">
+    <div class="d-flex mx-auto" style="height: auto; width: 50vw">
+        <div style="height:70vh ;width: 50vw; overflow-y: scroll;">
+            {% if rows|length == 0 %}
+            <div id="empty-list" class="d-flex geist-mono-500">You have no pending friend requests.</div>
+            {% else %}
             {% for row in rows %}
             <div class="card mx-5 my-1 px-3 py-3">
                 <div class="row">
                     <div class="col-1">
-                        <img src="{{ url_for_pfp(row.pfp_filename) }}" alt="pfp" height="40px" width="40px" style="border-radius: 15px;">
+                        <img src="{{ url_for_pfp(row.pfp_filename) }}" alt="pfp" height="40px" width="40px"
+                            style="border-radius: 15px;">
                     </div>
                     <div class="col-7">
                         <h4><a class="link-offset-2-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover text-dark"
-                            href="/profile/{{ row.username }}">{{ row.username }}</a></h4>
+                                href="/profile/{{ row.username }}">{{ row.username }}</a></h4>
                     </div>
                     <div class="col-2">
                         <form action="/friends/friendrequests/reject" method="post">
@@ -35,7 +37,8 @@ Friend Requests
                 </div>
             </div>
             {% endfor %}
-        {% endif %}
+            {% endif %}
+        </div>
     </div>
 </div>
 {% endblock %}
