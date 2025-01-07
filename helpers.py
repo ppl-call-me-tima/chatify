@@ -1,10 +1,17 @@
 from functools import wraps
 from flask import flash, redirect, session, url_for
 from os import environ
+from datetime import datetime
+from pytz import timezone
+
+from database import execute
 
 import requests  # render.com inactivity prevention
 
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+MY_ID = 60001
+DEFAULT_MESSAGE = "Hello, welcome to Chatify! This is an automatic message, and all messages after this will be real time - with me! Leave a message and I'll respond as soon as I can. Explore around, hope you like the site :)."
+IST = timezone("Asia/Kolkata")
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -37,3 +44,27 @@ def send_get():
 
 def url_for_pfp(filename):
     return f"https://{environ['AWS_BUCKET_NAME']}.s3.us-east-1.amazonaws.com/{filename}"
+
+
+def add_friend_automatically(rows):
+    timestamp = datetime.now(tz=IST).strftime(r"%Y%m%d%H%M%S%f")
+        
+    low, high = sorted([rows[0]["id"], MY_ID])
+    execute("INSERT INTO friendships (low_friend_id, high_friend_id) VALUES (:low, :high)", {"low": low, "high": high})
+    execute("""
+        INSERT INTO messages (
+            msg_from, 
+            msg_to, 
+            msg, 
+            timestamp
+        ) VALUES (
+            :MY_ID, 
+            :id, 
+            :msg, 
+            :timestamp)
+    """, {
+        "MY_ID": MY_ID, 
+        "id": session.get("user_id"), 
+        "msg": DEFAULT_MESSAGE,
+        "timestamp": f"{timestamp[8:10]}:{timestamp[10:12]} {timestamp[0:4]}/{timestamp[4:6]}/{timestamp[6:8]}"
+    })

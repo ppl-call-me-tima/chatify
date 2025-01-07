@@ -3,9 +3,9 @@ import boto3
 
 from database import execute, execute_retrieve
 from datetime import datetime, timedelta
-from flask import Flask, jsonify, render_template, redirect, request, session, url_for
+from flask import Flask, flash, jsonify, render_template, redirect, request, session, url_for
 from flask_socketio import SocketIO, join_room, leave_room, send, emit
-from helpers import *
+from helpers import allowed_file, flash_and_redirect, login_required, log_user_in, send_get, url_for_pfp, add_friend_automatically
 from markupsafe import escape
 from pytz import timezone
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -422,6 +422,7 @@ def register():
 
         rows = execute_retrieve("SELECT id FROM user WHERE username = :username", {"username":username})
         log_user_in(rows[0]["id"], username)
+        add_friend_automatically(rows=rows)
         
         return flash_and_redirect("Successfully Registered and Logged-In!", "index")
     else:
