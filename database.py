@@ -7,7 +7,7 @@ from sqlalchemy import create_engine, text
 # username = "root"
 # password = str(os.environ["DB_PASSWORD"])
 # host = "127.0.0.1"
-# dbname = "chatter"
+# dbname = "chatify"
 # option = "charset=utf8mb4"
 
 # connection_string = f"mysql+pymysql://{username}:{password}@{host}/{dbname}?{option}"
