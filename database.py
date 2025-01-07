@@ -30,7 +30,9 @@ def execute(query, parameters = None):
             conn.commit()
         except Exception as error:
             print("Some error occurred during SQL execution:", error)
-
+            
+            conn.execute(text(query), parameters or {})
+            conn.commit()
 
 def execute_retrieve(query, parameters = None):
     """Returns a list of dicts with keys as the attribute name of the table
@@ -45,10 +47,15 @@ def execute_retrieve(query, parameters = None):
         
         try:
             result = conn.execute(text(query), parameters or {})
-            fetched = result.all() #list of row objects
+            fetched = result.all()  #list of row objects
             keys = result.keys()
             rows = [dict(zip(keys, row_object)) for row_object in fetched]
         except Exception as error:
             print("Some error occured during SQL execution and retrieval:", error)
+            
+            result = conn.execute(text(query), parameters or {})
+            fetched = result.all()  #list of row objects
+            keys = result.keys()
+            rows = [dict(zip(keys, row_object)) for row_object in fetched]
     
     return rows
