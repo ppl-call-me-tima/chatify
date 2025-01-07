@@ -2,6 +2,8 @@ import os
 from sqlalchemy import create_engine, text
 from time import sleep
 
+DELAY = 3
+
 # Creating engine
 
 ## Using a local MySQL connection
@@ -32,7 +34,7 @@ def execute(query, parameters = None):
         except Exception as error:
             print("Some error occurred during SQL execution:", error)
             
-            sleep(2)
+            sleep(DELAY)
             conn.execute(text(query), parameters or {})
             conn.commit()
 
@@ -55,7 +57,7 @@ def execute_retrieve(query, parameters = None):
         except Exception as error:
             print("Some error occured during SQL execution and retrieval:", error)
             
-            sleep(2)
+            sleep(DELAY)
             result = conn.execute(text(query), parameters or {})
             fetched = result.all()  #list of row objects
             keys = result.keys()
