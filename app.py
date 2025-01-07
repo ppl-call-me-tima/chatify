@@ -413,6 +413,9 @@ def register():
         
         if rows:
             return flash_and_redirect("Username already taken!", "register")
+        
+        if len(username) > 30:
+            return flash_and_redirect("Username length can be at max 30!")
                 
         execute("INSERT INTO user (username, hash) VALUES (:username, :hash)", 
                 {"username":username, "hash":generate_password_hash(password)})
