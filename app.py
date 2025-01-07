@@ -409,13 +409,13 @@ def register():
             flash("Passwords don't match!")
             return render_template("register.html", username=username, password=password, confirmation=confirmation)
                 
+        if len(username) > 30:
+            return flash_and_redirect("Username length can be at max 30!", "register")
+        
         rows = execute_retrieve("SELECT id FROM user WHERE username = :username", {"username":username})
         
         if rows:
             return flash_and_redirect("Username already taken!", "register")
-        
-        if len(username) > 30:
-            return flash_and_redirect("Username length can be at max 30!")
                 
         execute("INSERT INTO user (username, hash) VALUES (:username, :hash)", 
                 {"username":username, "hash":generate_password_hash(password)})
