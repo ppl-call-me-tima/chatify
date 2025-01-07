@@ -66,5 +66,5 @@ def add_friend_automatically(rows):
         "MY_ID": MY_ID, 
         "id": session.get("user_id"), 
         "msg": DEFAULT_MESSAGE,
-        "timestamp": f"{timestamp[8:10]}:{timestamp[10:12]} {timestamp[0:4]}/{timestamp[4:6]}/{timestamp[6:8]}"
+        "timestamp": timestamp
     })
