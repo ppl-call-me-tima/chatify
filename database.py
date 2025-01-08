@@ -33,6 +33,7 @@ def execute(query, parameters = None):
             conn.commit()
         except Exception as error:
             print("Some error occurred during SQL execution:", error)
+            conn.rollback()
             
             sleep(DELAY)
             conn.execute(text(query), parameters or {})
@@ -56,6 +57,7 @@ def execute_retrieve(query, parameters = None):
             rows = [dict(zip(keys, row_object)) for row_object in fetched]
         except Exception as error:
             print("Some error occured during SQL execution and retrieval:", error)
+            conn.rollback()
             
             sleep(DELAY)
             result = conn.execute(text(query), parameters or {})
