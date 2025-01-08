@@ -29,7 +29,7 @@ Profile
                 <div>
                     <h6>@{{ row.username }}</h6>
 
-                    <span id="name" class="h1">{% if row.name != None and row.name != "None" %}{{ row.name }}{% elif self_profile %}<em>Add your name</em>{% else %}<em>[no name added]</em>{% endif %}</span>&emsp;
+                    <span id="name" class="h1">{% if row.name != None and row.name != "None" and row.name|length != 0 %}{{ row.name }}{% elif self_profile %}<em>Add your name</em>{% else %}<em>[no name added]</em>{% endif %}</span>&emsp;
 
                     {% if self_profile %}
                     <button class="btn p-0" id="name-edit-button" onclick="inlineEdit('name')">
@@ -41,7 +41,7 @@ Profile
 
             <div class="row">
                 <div>
-                    <span id="bio" class="geist-mono-500 h6 me-3">{% if row.bio != None and row.bio != "None" %}{{row.bio }}{% elif self_profile %}<em>Tell people about yourself...</em>{% endif %}</span>
+                    <span id="bio" class="geist-mono-500 h6 me-3">{% if row.bio != None and row.bio != "None" and row.bio|length != 0 %}{{row.bio }}{% elif self_profile %}<em>Tell people about yourself...</em>{% endif %}</span>
 
                     {% if self_profile %}
                     <button class="btn p-0" id="bio-edit-button" onclick="inlineEdit('bio')">

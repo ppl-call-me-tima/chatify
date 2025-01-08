@@ -3,9 +3,9 @@ function inlineEdit(originalDisplayID) {
 
     console.log(originalDisplayElement.textContent, originalDisplayElement.textContent.length);
 
-    if (originalDisplayElement.textContent === "Tell people about yourself..." || 
+    if (originalDisplayElement.textContent === "Tell people about yourself..." ||
         originalDisplayElement.textContent === "Add your name"
-    ){
+    ) {
         originalDisplayElement.textContent = "";
     }
 
@@ -21,7 +21,7 @@ function inlineEdit(originalDisplayID) {
     inputField.value = originalDisplayContent;
     saveButton.classList = "btn p-0";
 
-    switch(originalDisplayID){
+    switch (originalDisplayID) {
         case "name":
             inputField.classList = "h1";
             inputField.style.width = "340px";
@@ -58,7 +58,18 @@ function inlineEdit(originalDisplayID) {
                 value: newDisplayContent
             })
         });
-        originalDisplayElement.textContent = newDisplayContent;
+
+        if (newDisplayContent.length === 0) {
+            if (originalDisplayID === "name") {
+                originalDisplayElement.innerHTML = `<em>Add your name</em>`
+            }
+            else if (originalDisplayID === "bio") {
+                originalDisplayElement.innerHTML = `<em>Tell people about yourself...</em>`;
+            }
+        }
+        else{
+            originalDisplayElement.textContent = newDisplayContent;
+        }
 
         originalDisplayElement.style.display = "inline";
         editButtonElement.style.display = "inline";
