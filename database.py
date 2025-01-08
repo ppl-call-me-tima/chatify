@@ -2,7 +2,7 @@ import os
 from sqlalchemy import create_engine, text
 from time import sleep
 
-DELAY = 4
+DELAY = 5
 
 # Creating engine
 
