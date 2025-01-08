@@ -1,5 +1,14 @@
 function inlineEdit(originalDisplayID) {
     const originalDisplayElement = document.getElementById(originalDisplayID);
+
+    console.log(originalDisplayElement.textContent, originalDisplayElement.textContent.length);
+
+    if (originalDisplayElement.textContent === "Tell people about yourself..." || 
+        originalDisplayElement.textContent === "Add your name"
+    ){
+        originalDisplayElement.textContent = "";
+    }
+
     const editButtonElement = document.getElementById(originalDisplayID + '-edit-button');
     const originalDisplayContent = originalDisplayElement.textContent;
 
@@ -31,6 +40,8 @@ function inlineEdit(originalDisplayID) {
 
     originalDisplayElement.style.display = "none";
     editButtonElement.style.display = "none";
+
+    inputField.focus();
 
     saveButton.onclick = async function () {
         const newDisplayContent = inputField.value;
