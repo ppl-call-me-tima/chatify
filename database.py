@@ -1,8 +1,5 @@
 import os
 from sqlalchemy import create_engine, text
-from time import sleep
-
-DELAY = 0
 
 # Creating engine
 
@@ -24,7 +21,6 @@ connection_string = f"mysql+pymysql://39HVxerRsFMaxdU.root:{password}@gateway01.
 engine = create_engine(connection_string)
 
 def execute(query, parameters = None):
-    """In case of error during query execution, nothing is happened."""
     
     with engine.connect() as conn:
         
@@ -35,15 +31,12 @@ def execute(query, parameters = None):
             print("Some error occurred during SQL execution:", error)
             conn.rollback()
             
-            sleep(DELAY)
             conn.execute(text(query), parameters or {})
             conn.commit()
 
 def execute_retrieve(query, parameters = None):
     """Returns a list of dicts with keys as the attribute name of the table
     Converts list of <class sqlalchemy.engine.row.Row> objects to list of dicts
-    
-    In case or error during query execution, returns an Empty List.
     """
     
     with engine.connect() as conn:
@@ -59,7 +52,6 @@ def execute_retrieve(query, parameters = None):
             print("Some error occured during SQL execution and retrieval:", error)
             conn.rollback()
             
-            sleep(DELAY)
             result = conn.execute(text(query), parameters or {})
             fetched = result.all()  #list of row objects
             keys = result.keys()
