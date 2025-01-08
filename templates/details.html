@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Details
+{% endblock %}
+
+{% block main %}
+
+<div id="main-box" class="container mt-4">
+    <div id="inner-box">
+        <form id="f" class="d-flex flex-column align-items-center" action="/details" enctype="multipart/form-data" method="post">
+            <div class="mb-3">
+                <input {% if not old %} autofocus {% endif %} class="form-control form-control-lg" name="name" placeholder="Name" type="text" value="{{ name }}">
+            </div>
+            <div class="mb-3">
+                <input {% if not new %} autofocus {% endif %} class="form-control form-control-lg" name="bio" placeholder="Bio" type="text" value="{{ bio }}">
+            </div>
+            <div class="mb-4">
+                <input class="form-control" name="upload_pfp" type="file" style="width: 17vw;">
+            </div>
+            <div>
+                <input class="btn btn-primary" type="submit" value="Done">
+                <input class="btn btn-primary btn-dark" type="submit" value="Skip">
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

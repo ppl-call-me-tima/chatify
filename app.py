@@ -5,7 +5,7 @@ from database import execute, execute_retrieve
 from datetime import datetime, timedelta
 from flask import Flask, flash, jsonify, render_template, redirect, request, session, url_for
 from flask_socketio import SocketIO, join_room, leave_room, send, emit
-from helpers import allowed_file, flash_and_redirect, login_required, log_user_in, send_get, url_for_pfp, add_friend_automatically
+from helpers import add_friend_automatically, allowed_file, flash_and_redirect, login_required, log_user_in, new_user, send_get, url_for_pfp
 from markupsafe import escape
 from pytz import timezone
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -195,6 +195,41 @@ def change_password():
         return flash_and_redirect("Password changed successfully!", "change_password")
     else:
         return render_template("change_password.html")
+
+
+@app.route("/details", methods=["GET", "POST"])
+@login_required
+@new_user
+def details():
+    if request.method == "POST":
+        name = request.form.get("name")
+        bio = request.form.get("bio")
+        file = request.files.get("upload_pfp")
+        
+        if name:
+            execute("UPDATE user SET name = :name WHERE id = :id", {"name": name, "id": session.get("user_id")})
+        
+        if bio:
+            execute("UPDATE user SET bio = :bio WHERE id = :id", {"bio": bio, "id": session.get("user_id")})
+        
+        if file:
+            if allowed_file(file.filename) and len(file.filename) <= 50:
+                filename = secure_filename(file.filename)
+                timestamp = datetime.now(tz=IST).strftime("%Y%m%d_%H%M%S%f")
+                name, ext = os.path.splitext(filename)
+                filename = f"{name}_{timestamp}{ext}"
+                
+                execute("UPDATE user SET pfp_filename = :filename WHERE id = :user_id", 
+                        {"filename": filename, "user_id": session.get("user_id")})
+                
+                s3.upload_fileobj(file, aws_bucket_name, filename)
+            else:
+                flash("There was an issue uploading your profile photo, re-upload it from the Profile tab.")
+        
+        session.pop("new_user")
+        return redirect(url_for("index"))
+    else:
+        return render_template("details.html")
 
 
 @app.route("/friends/myfriends")
@@ -423,8 +458,9 @@ def register():
         rows = execute_retrieve("SELECT id FROM user WHERE username = :username", {"username":username})
         log_user_in(rows[0]["id"], username)
         add_friend_automatically(rows=rows)
+        session["new_user"] = True
         
-        return flash_and_redirect("Successfully Registered and Logged-In!", "index")
+        return redirect(url_for("details"))
     else:
         return render_template("register.html")
     

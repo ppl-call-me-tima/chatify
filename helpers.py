@@ -38,6 +38,15 @@ def log_user_in(user_id: int, username: str):
     session["username"] = username
 
 
+def new_user(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if "new_user" not in session:
+            return redirect(url_for("index"))
+        return f(*args, **kwargs)
+    return decorated_function
+
+
 def send_get():
     requests.get("https://chatify-i0dd.onrender.com/")
 
