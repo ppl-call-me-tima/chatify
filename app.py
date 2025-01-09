@@ -268,12 +268,20 @@ def remove():
     ids = [rows[0]["low_friend_id"], rows[0]["high_friend_id"]]
     
     if session["user_id"] not in ids:
-        return flash_and_redirect("Friendship removal not allowed.", "myfriends")
-        
+        flash("Friendship removal not allowed.")
+        if request.form.get("sent_from_profile"):
+            return redirect(f"/profile/{request.form.get('username')}")
+        else:
+            return redirect("/friends/myfriends")
+                
     execute("DELETE FROM friendships WHERE id = :friendship_id", {"friendship_id": friendship_id})  
     
-    return flash_and_redirect("Friend Removed!", "myfriends")
-
+    flash("Friend removed!")
+    if request.form.get("sent_from_profile"):
+        return redirect(f"/profile/{request.form.get('username')}")
+    else:
+        return redirect("/friends/myfriends")
+    
 
 @app.route("/friends/friendrequests")
 @login_required
@@ -355,16 +363,24 @@ def sendfriendrequests():
                                 {"from": session.get("user_id"), "to": to_friend_id})
         
         if rows:
-            return flash_and_redirect("Friend request already sent!", "sendfriendrequests")
-        
+            flash("Friend request already sent!")
+            if request.form.get("sent_from_profile"):
+                return redirect(f"/profile/{username}")
+            else:
+                return redirect("/friends/sendfriendrequests")
+                    
         low_friend_id, high_friend_id = sorted([session.get("user_id"), to_friend_id])
         
         rows = execute_retrieve("SELECT id FROM friendships WHERE low_friend_id = :low AND high_friend_id = :high",
                                 {"low": low_friend_id, "high": high_friend_id})
         
         if rows:
-            return flash_and_redirect("They're already your friend!", "sendfriendrequests")
-        
+            flash("They're already your friend!")
+            if request.form.get("sent_from_profile"):
+                return redirect(f"/profile/{username}")
+            else:
+                return redirect("/friends/sendfriendrequests")
+                    
         # Check for already present reverse friend request
         rows = execute_retrieve("SELECT id FROM friend_requests WHERE req_from = :from AND req_to = :to",
                                 {"from": to_friend_id, "to": session.get("user_id")})
@@ -376,12 +392,21 @@ def sendfriendrequests():
             execute("INSERT INTO friendships (low_friend_id, high_friend_id) VALUES (:low_friend_id, :high_friend_id)",
                     {"low_friend_id": low_friend_id, "high_friend_id": high_friend_id})
             
-            return flash_and_redirect("They had sent you a request, now you're both friends!", "sendfriendrequests")
-        
+            flash("They had sent you a request, now you're both friends!")
+            if request.form.get("sent_from_profile"):
+                return redirect(f"/profile/{username}")
+            else:
+                return redirect("/friends/sendfriendrequests")
+                    
         execute("INSERT INTO friend_requests (req_from, req_to) VALUES (:from, :to)", 
                 {"from": session.get("user_id"), "to": to_friend_id})
         
-        return flash_and_redirect("Friend request sent!", "sendfriendrequests")
+        
+        flash("Friend request sent!")
+        if request.form.get("sent_from_profile"):
+            return redirect(f"/profile/{username}")
+        else:
+            return redirect("/friends/sendfriendrequests")
     else:
         return render_template("sendfriendrequests.html")
 
@@ -470,15 +495,38 @@ def register():
 def profile(username):
     username = str(escape(username))
     
+    self_profile = False
+    friendship_id = False
+    
     if username == session.get("username"):
         self_profile = True
     else:
         self_profile = False
+        
+        rows = execute_retrieve("SELECT id AS other_id FROM user WHERE username = :other_username", {"other_username": username})
+        other_id = rows[0]["other_id"]
+        
+        low, high = sorted([session.get("user_id"), other_id])
+        rows = execute_retrieve("""
+            SELECT 
+                id AS friendship_id
+            FROM 
+                friendships 
+            WHERE 
+                low_friend_id = :low 
+                AND high_friend_id = :high
+            """, {
+                "low": low, 
+                "high": high
+            })
+        
+        if rows:
+            friendship_id = rows[0]["friendship_id"]
     
     rows = execute_retrieve("SELECT username, pfp_filename, name, bio FROM user WHERE username = :username", 
                             {"username": username})
     
-    return render_template("profile.html", row=rows[0], self_profile=self_profile)
+    return render_template("profile.html", row=rows[0], self_profile=self_profile, friendship_id=friendship_id)
 
 
 @app.route("/profile/inline_edit", methods=["POST"])
