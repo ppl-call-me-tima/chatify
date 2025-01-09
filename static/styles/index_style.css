@@ -24,6 +24,7 @@
 #friend-button {
     width: 100%;
     border-bottom: 1px solid lightgrey;
+    border-radius: 0px;
 }
 
 #message-box-header {
