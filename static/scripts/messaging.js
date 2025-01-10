@@ -71,7 +71,7 @@ const joinRoom = (friend_id, username) => {
     }
 
     currentOpenedChatId = friend_id;
-    
+
     document.getElementById(`chat-card-${currentOpenedChatId}`).style.backgroundColor = "rgb(230, 230, 230)";
     document.getElementById("message").disabled = false;
     document.getElementById("message").focus();
@@ -104,8 +104,19 @@ const sendMessage = () => {
 function loadSingleMessageIntoMessageBox(data) {
     const messageBoxElement = document.getElementById("message-box");
     const messageDivElement = document.createElement("div");
+    messageDivElement.classList.add("message");
+    messageDivElement.classList.add("mb-1");
+
     messageDivElement.innerHTML = `
-        <strong>${data["msg_from_username"]}</strong> : ${data["msg"]} <span style="font-size: 7.5px;">${data["timestamp"]}</span>
+        ${data["msg"]} <span style="font-size: 0.75rem;"><sub><em>${data["timestamp"]}</em></sub></span>
     `;
+
+    if (data["msg_from_username"] === document.getElementById("message-box-header-name").innerText) {
+        messageDivElement.classList.add("received-message");
+    }
+    else {
+        messageDivElement.classList.add("sent-message");
+    }
+
     messageBoxElement.appendChild(messageDivElement);
 }

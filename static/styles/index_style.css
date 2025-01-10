@@ -43,6 +43,19 @@
     height: 75%;
 }
 
+.message{
+    padding: 1% 2%;
+    width: fit-content;
+    max-width: 60%;
+    border: 1px solid lightgrey;
+    border-radius: 25px;
+    background-color: azure;
+}
+
+.sent-message{
+    justify-self: end;
+}
+
 #message-input-box {
     padding: 1.28% 1.5%;
     height: auto;
