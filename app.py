@@ -87,7 +87,7 @@ def join_a_room(friend_id):
     
     for row in rows:
         timestamp = row["timestamp"]
-        row["timestamp"] = f"{timestamp[8:10]}:{timestamp[10:12]} {timestamp[0:4]}/{timestamp[4:6]}/{timestamp[6:8]}"
+        row["timestamp"] = f"{timestamp[8:10]}:{timestamp[10:12]} {timestamp[6:8]}/{timestamp[4:6]}/{timestamp[0:4]}"
     
     emit("load_messages", rows, json=True)
     
@@ -121,7 +121,7 @@ def message(data):
         "msg_from_username": session.get("username"),
         "msg_to_username": data["msg_to"],
         "msg": data["message"],
-        "timestamp": f"{timestamp[8:10]}:{timestamp[10:12]} {timestamp[0:4]}/{timestamp[4:6]}/{timestamp[6:8]}"
+        "timestamp": f"{timestamp[8:10]}:{timestamp[10:12]} {timestamp[6:8]}/{timestamp[4:6]}/{timestamp[0:4]}"
     }
     
     send(json_data, to=session.get("room_code"))
