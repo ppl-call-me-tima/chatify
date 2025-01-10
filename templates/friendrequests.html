@@ -6,8 +6,9 @@ Friend Requests
 
 {% block main %}
 <div id="main-box" class="container mt-4">
+    <h1 class="geist-mono-500" style="justify-self: center;">Incoming Friend Requests [{{ rows|length }}]</h1>
     <div class="d-flex mx-auto" style="height: auto; width: 50vw">
-        <div style="height:70vh ;width: 50vw; overflow-y: scroll;">
+        <div style="height: 63vh; width: 50vw; overflow-y: scroll;">
             {% if rows|length == 0 %}
             <div id="empty-list" class="d-flex geist-mono-500">You have no pending friend requests.</div>
             {% else %}
