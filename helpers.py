@@ -4,7 +4,7 @@ from os import environ
 from datetime import datetime
 from pytz import timezone
 
-from database import execute
+from database import execute, execute_retrieve
 
 import requests  # render.com inactivity prevention
 
@@ -45,6 +45,26 @@ def allowed_file(filename):
 def flash_and_redirect(msg: str, func: str, **kwargs):
     flash(msg)
     return redirect(url_for(func, **kwargs))
+
+
+def is_profane(msg, profanity):
+    msg_words = msg.split()
+    
+    for word in msg_words:
+        if word in profanity:
+            return True
+    
+    return False
+
+
+def load_profanity_checking():
+    rows = execute_retrieve("SELECT word FROM profanity")
+    words = set()
+    
+    for row in rows:
+        words.add(row["word"])
+    
+    return words
 
 
 def login_required(f):

@@ -5,7 +5,7 @@ from database import execute, execute_retrieve
 from datetime import datetime, timedelta
 from flask import Flask, flash, jsonify, render_template, redirect, request, session, url_for
 from flask_socketio import SocketIO, join_room, leave_room, send, emit
-from helpers import add_friend_automatically, allowed_file, flash_and_redirect, login_required, log_user_in, new_user, send_get, url_for_pfp
+from helpers import add_friend_automatically, allowed_file, flash_and_redirect, is_profane, load_profanity_checking, login_required, log_user_in, new_user, send_get, url_for_pfp
 from markupsafe import escape
 from pytz import timezone
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -32,6 +32,8 @@ app.permanent_session_lifetime = timedelta(minutes=69)
 app.config["MAX_CONTENT_LENGTH"] = 64 * 1000 * 1000  # 64MB
 #Time Zone
 IST = timezone("Asia/Kolkata")
+# Profanity Checking
+profanity = load_profanity_checking()
 
 
 @socketio.on("connect")
@@ -93,11 +95,39 @@ def join_a_room(friend_id):
     
 
 @socketio.on("message")
-def message(data):  
+def message(data):
+    
     rows = execute_retrieve("SELECT id AS friend_id FROM user WHERE username = :username", 
                             {"username": data["msg_to"]})
     
     timestamp = datetime.now(tz=IST).strftime(r"%Y%m%d%H%M%S%f")
+    
+    if is_profane(data["message"], profanity):
+        is_immune = execute_retrieve("SELECT isImmune FROM user WHERE id = :id", {"id": session.get("user_id")})[0]["isImmune"]
+        
+        if not is_immune:
+            # TODO: add some level of mute or warning inside db, and block if exceeds a defined limit
+            
+            execute("""
+                INSERT INTO profane_messages (
+                    msg_from, 
+                    msg_to, 
+                    msg, 
+                    timestamp
+                ) VALUES (
+                    :msg_from, 
+                    :msg_to, 
+                    :msg, 
+                    :timestamp)
+            """, {
+                "msg_from": session.get("user_id"), 
+                "msg_to": rows[0]["friend_id"], 
+                "msg": data["message"],
+                "timestamp": timestamp
+            })
+
+            emit("profanity_detected")
+            return
     
     execute("""
         INSERT INTO messages (

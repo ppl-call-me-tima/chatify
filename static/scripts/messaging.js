@@ -63,6 +63,14 @@ socketio.on("message", (data) => {
     loadSingleMessageIntoMessageBox(data);
 });
 
+socketio.on("profanity_detected", (data) => {
+    document.getElementById("profanity-warning-box").classList.toggle("show");
+});
+
+function profanityOkay(){
+    document.getElementById("profanity-warning-box").classList.toggle("show");
+}
+
 const joinRoom = (friend_id, username) => {
     socketio.emit("join_a_room", parseInt(friend_id));
 
