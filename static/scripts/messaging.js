@@ -1,7 +1,7 @@
 var currentOpenedChatId = "";
 
 document.getElementById("message").addEventListener("keydown", (event) => {
-    if (event.code == "Enter") {
+    if (event.code == "Enter" && document.getElementById("message").value.trim().length !== 0) {
         sendMessage();
     }
 });
