@@ -100,32 +100,15 @@ def message(data):
     rows = execute_retrieve("SELECT id AS friend_id FROM user WHERE username = :username", 
                             {"username": data["msg_to"]})
     
+    receiver_enabled_profanity = bool(execute_retrieve("SELECT isProfanityEnabled FROM user WHERE id = :id", {"id": rows[0]["friend_id"]})[0]["isProfanityEnabled"])    
     timestamp = datetime.now(tz=IST).strftime(r"%Y%m%d%H%M%S%f")
     
-    if is_profane(data["message"], profanity):
-        is_immune = execute_retrieve("SELECT isImmune FROM user WHERE id = :id", {"id": session.get("user_id")})[0]["isImmune"]
+    if not receiver_enabled_profanity and is_profane(data["message"], profanity):
+        is_immune = bool(execute_retrieve("SELECT isImmune FROM user WHERE id = :id", {"id": session.get("user_id")})[0]["isImmune"])
         
         if not is_immune:
             # TODO: add some level of mute or warning inside db, and block if exceeds a defined limit
             
-            execute("""
-                INSERT INTO profane_messages (
-                    msg_from, 
-                    msg_to, 
-                    msg, 
-                    timestamp
-                ) VALUES (
-                    :msg_from, 
-                    :msg_to, 
-                    :msg, 
-                    :timestamp)
-            """, {
-                "msg_from": session.get("user_id"), 
-                "msg_to": rows[0]["friend_id"], 
-                "msg": data["message"],
-                "timestamp": timestamp
-            })
-
             emit("profanity_detected")
             return
     
@@ -179,7 +162,9 @@ def index():
         JOIN user ON user.id = f.friend_id
     """, {"user_id": session.get("user_id")})
     
-    return render_template("index.html", rows=rows, index=True)
+    profanity_enabled = execute_retrieve("SELECT isProfanityEnabled FROM user WHERE id = :id", {"id": session.get("user_id")})[0]["isProfanityEnabled"]
+    
+    return render_template("index.html", rows=rows, index=True, profanity_enabled=profanity_enabled)
 
 
 @app.route("/change_password", methods=["GET", "POST"])
@@ -588,6 +573,15 @@ def remove_pfp():
         return redirect(url_for("profile", username=session.get("username")))        
 
 
+@app.route("/toggle_profanity")
+@login_required
+def toggle_profanity():
+    status = execute_retrieve("SELECT isProfanityEnabled FROM user WHERE id = :id", {"id": session.get("user_id")})[0]["isProfanityEnabled"]
+    execute("UPDATE user SET isProfanityEnabled = :status WHERE id = :id", {"status": not status, "id": session.get("user_id")})
+    
+    return redirect(url_for("index"))
+
+
 @app.route("/upload_pfp", methods=["POST"])
 @login_required
 def upload_pfp():
@@ -625,4 +619,4 @@ def upload_pfp():
 
 
 if __name__ == "__main__":
-    socketio.run(app, allow_unsafe_werkzeug=True, host="0.0.0.0")
+    socketio.run(app, allow_unsafe_werkzeug=True, host="0.0.0.0", debug=True)
