@@ -97,3 +97,6 @@ def send_get():
 
 def url_for_pfp(filename):
     return f"https://{environ['AWS_BUCKET_NAME']}.s3.us-east-1.amazonaws.com/{filename}"
+
+def user_count():
+    return execute_retrieve("SELECT COUNT(*) AS count FROM user")[0]["count"]
