@@ -536,10 +536,29 @@ def profile(username):
         if rows:
             friendship_id = rows[0]["friendship_id"]
     
-    rows = execute_retrieve("SELECT username, pfp_filename, name, bio FROM user WHERE username = :username", 
+    rows = execute_retrieve("SELECT id, username, pfp_filename, name, bio FROM user WHERE username = :username", 
                             {"username": username})
     
-    return render_template("profile.html", row=rows[0], self_profile=self_profile, friendship_id=friendship_id)
+    friends = execute_retrieve("""
+        SELECT 
+            f.id AS friendship_id, 
+            f.friend_id, 
+            user.username, 
+            user.pfp_filename
+        FROM
+        (
+            SELECT friendships.id,
+                CASE
+                    WHEN low_friend_id = :user_id THEN high_friend_id
+                    ELSE low_friend_id
+                END AS friend_id
+            FROM friendships
+            WHERE low_friend_id = :user_id OR high_friend_id = :user_id
+        ) AS f
+        JOIN user ON user.id = f.friend_id
+    """, {"user_id": rows[0]["id"]})
+    
+    return render_template("profile.html", row=rows[0], self_profile=self_profile, friendship_id=friendship_id, friends=friends)
 
 
 @app.route("/profile/inline_edit", methods=["POST"])
