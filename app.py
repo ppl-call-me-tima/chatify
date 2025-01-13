@@ -103,11 +103,8 @@ def message(data):
     receiver_enabled_profanity = bool(execute_retrieve("SELECT isProfanityEnabled FROM user WHERE id = :id", {"id": rows[0]["friend_id"]})[0]["isProfanityEnabled"])    
     timestamp = datetime.now(tz=IST).strftime(r"%Y%m%d%H%M%S%f")
     
-    if receiver_enabled_profanity and is_profane(data["message"], profanity):
-        # is_immune = bool(execute_retrieve("SELECT isImmune FROM user WHERE id = :id", {"id": session.get("user_id")})[0]["isImmune"])
-        
-        # if not is_immune:
-            # TODO: add some level of mute or warning inside db, and block if exceeds a defined limit
+    if not receiver_enabled_profanity and is_profane(data["message"], profanity):
+        # TODO: add some level of mute or warning inside db, and block if exceeds a defined limit
             
         emit("profanity_detected")
         return
