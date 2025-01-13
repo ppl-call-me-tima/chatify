@@ -100,17 +100,17 @@ def message(data):
     rows = execute_retrieve("SELECT id AS friend_id FROM user WHERE username = :username", 
                             {"username": data["msg_to"]})
     
-    # receiver_enabled_profanity = bool(execute_retrieve("SELECT isProfanityEnabled FROM user WHERE id = :id", {"id": rows[0]["friend_id"]})[0]["isProfanityEnabled"])    
+    receiver_enabled_profanity = bool(execute_retrieve("SELECT isProfanityEnabled FROM user WHERE id = :id", {"id": rows[0]["friend_id"]})[0]["isProfanityEnabled"])    
     timestamp = datetime.now(tz=IST).strftime(r"%Y%m%d%H%M%S%f")
     
-    if is_profane(data["message"], profanity):
-        is_immune = bool(execute_retrieve("SELECT isImmune FROM user WHERE id = :id", {"id": session.get("user_id")})[0]["isImmune"])
+    if receiver_enabled_profanity and is_profane(data["message"], profanity):
+        # is_immune = bool(execute_retrieve("SELECT isImmune FROM user WHERE id = :id", {"id": session.get("user_id")})[0]["isImmune"])
         
-        if not is_immune:
+        # if not is_immune:
             # TODO: add some level of mute or warning inside db, and block if exceeds a defined limit
             
-            emit("profanity_detected")
-            return
+        emit("profanity_detected")
+        return
     
     execute("""
         INSERT INTO messages (
@@ -619,4 +619,4 @@ def upload_pfp():
 
 
 if __name__ == "__main__":
-    socketio.run(app, allow_unsafe_werkzeug=True, host="0.0.0.0")
+    socketio.run(app, allow_unsafe_werkzeug=True, host="0.0.0.0", debug=True)
