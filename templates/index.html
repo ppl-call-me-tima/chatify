@@ -25,7 +25,7 @@ Homepage
 
             {% for row in rows %}
             <button id="friend-button" class="btn p-0" onclick="joinRoom('{{ row.friend_id }}', '{{ row.username }}')">
-                <div id="chat-card-{{ row.friend_id }}" class="px-3 py-3">
+                <div id="chat-card-{{ row.friend_id }}" class="px-3 py-3" onmouseover="mouseOverChatCard(this)" onmouseout="mouseOutChatCard(this, '{{ row.friend_id }}')">
                     <div class="row">
                         <div class="col-2">
                             <a class="link-offset-2-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover text-dark"

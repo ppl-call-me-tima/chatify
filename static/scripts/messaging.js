@@ -67,8 +67,18 @@ socketio.on("profanity_detected", (data) => {
     document.getElementById("profanity-warning-box").classList.toggle("show");
 });
 
-function profanityOkay(){
+function profanityOkay() {
     document.getElementById("profanity-warning-box").classList.toggle("show");
+}
+
+function mouseOverChatCard(element) {
+    element.style.backgroundColor = "rgb(230, 230, 230)";
+}
+
+function mouseOutChatCard(element, id) {
+    if (currentOpenedChatId !== id) {
+        element.style.backgroundColor = "white";
+    }
 }
 
 const joinRoom = (friend_id, username) => {
