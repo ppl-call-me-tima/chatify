@@ -541,8 +541,6 @@ def profile(username):
     
     friends = execute_retrieve("""
         SELECT 
-            f.id AS friendship_id, 
-            f.friend_id, 
             user.username, 
             user.pfp_filename
         FROM
