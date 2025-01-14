@@ -5,7 +5,7 @@ from database import execute, execute_retrieve
 from datetime import datetime, timedelta
 from flask import Flask, flash, jsonify, render_template, redirect, request, session, url_for
 from flask_socketio import SocketIO, join_room, leave_room, send, emit
-from helpers import add_friend_automatically, allowed_file, flash_and_redirect, is_profane, load_profanity_checking, login_required, log_user_in, new_user, send_get, url_for_pfp, user_count
+from helpers import add_friend_automatically, allowed_file, flash_and_redirect, is_profane, is_profanity_enabled, load_profanity_checking, login_required, log_user_in, new_user, send_get, url_for_pfp, user_count
 from markupsafe import escape
 from pytz import timezone
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -26,6 +26,7 @@ scheduler.add_job(id="send_GET", func=send_get, trigger="interval", seconds=600)
 aws_bucket_name = os.environ["AWS_BUCKET_NAME"]
 app.jinja_env.globals.update(url_for_pfp=url_for_pfp)
 app.jinja_env.globals.update(user_count=user_count)
+app.jinja_env.globals.update(is_profanity_enabled=is_profanity_enabled)
 # Permanent Session
 app.secret_key = os.environ["APP_KEY"].encode("utf-8")
 app.permanent_session_lifetime = timedelta(minutes=69)
@@ -160,9 +161,7 @@ def index():
         JOIN user ON user.id = f.friend_id
     """, {"user_id": session.get("user_id")})
     
-    profanity_enabled = execute_retrieve("SELECT isProfanityEnabled FROM user WHERE id = :id", {"id": session.get("user_id")})[0]["isProfanityEnabled"]
-    
-    return render_template("index.html", rows=rows, index=True, profanity_enabled=profanity_enabled)
+    return render_template("index.html", rows=rows, index=True)
 
 
 @app.route("/change_password", methods=["GET", "POST"])

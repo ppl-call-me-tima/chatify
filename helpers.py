@@ -57,6 +57,10 @@ def is_profane(msg, profanity):
     return False
 
 
+def is_profanity_enabled():
+    return bool(execute_retrieve("SELECT isProfanityEnabled FROM user WHERE id = :id", {"id": session.get("user_id")})[0]["isProfanityEnabled"])
+
+
 def load_profanity_checking():
     rows = execute_retrieve("SELECT word FROM profanity")
     words = set()

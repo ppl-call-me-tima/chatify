@@ -81,7 +81,7 @@
 						</a>
 						<ul class="dropdown-menu dropdown-menu-end">
 							<li><a class="dropdown-item" href="/toggle_profanity">Toggle Profanity&nbsp
-								{% if profanity_enabled %}
+								{% if is_profanity_enabled() %}
 								<img src="../static/icons/check.png" height="20em">
 								{% else %}
 								<img src="../static/icons/uncheck.png" height="20em">
