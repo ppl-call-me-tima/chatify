@@ -25,7 +25,7 @@ Homepage
 
             {% for row in rows %}
             <button id="friend-button" class="btn p-0" onclick="joinRoom('{{ row.friend_id }}', '{{ row.username }}')">
-                <div id="chat-card-{{ row.friend_id }}" class="px-3 py-3" onmouseover="mouseOverChatCard(this)" onmouseout="mouseOutChatCard(this, '{{ row.friend_id }}')">
+                <div id="chat-card-{{ row.friend_id }}" class="px-3 py-3" onmouseover="mouseOverChatCard(this)" onmouseout="mouseOutChatCard(this, '{{ row.friend_id }}')" style="background-color: white;">
                     <div class="row">
                         <div class="col-2">
                             <a class="link-offset-2-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover text-dark"
@@ -35,7 +35,28 @@ Homepage
                             </a>
                         </div>
                         <div class="col">
-                            <h4>{{ row.username }}</h4>
+                            <div class="row">
+                                <h4>{{ row.username }}</h4>
+                            </div>
+                            {% if row.msg %}
+                            <div class="row">
+                                <div style="height: 10px;">
+                                    <h7>
+                                        <strong>
+                                            <span id="chat-card-lastest-msg-from-{{ row.friend_id }}">
+                                                {% if row.msg_from == row.friend_id %}
+                                                {{ row.username }}
+                                                {% else %}
+                                                You
+                                                {% endif %}
+                                                :
+                                            </span>
+                                        </strong>
+                                        <span id="chat-card-latest-msg-{{ row.friend_id }}">{{ row.msg }}</span>
+                                    </h7>
+                                </div>
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

@@ -1,4 +1,5 @@
 var currentOpenedChatId = "";
+const PREVIEW_MSG_LENGTH_ALLOWED = 45;
 
 document.getElementById("message").addEventListener("keydown", (event) => {
     if (event.code == "Enter" && document.getElementById("message").value.trim().length !== 0) {
@@ -60,7 +61,7 @@ socketio.on("load_messages", (rows) => {
 });
 
 socketio.on("message", (data) => {
-    loadSingleMessageIntoMessageBox(data);
+    loadSingleMessageIntoMessageBox(data, sendingLive = true);
 });
 
 socketio.on("profanity_detected", (data) => {
@@ -119,7 +120,9 @@ const sendMessage = () => {
 }
 
 // HELPER FUNCTIONS
-function loadSingleMessageIntoMessageBox(data) {
+function loadSingleMessageIntoMessageBox(data, sendingLive = false) {
+
+    // adding msg into the main mesg box
     const messageBoxElement = document.getElementById("message-box");
     const messageDivElement = document.createElement("div");
     messageDivElement.classList.add("message");
@@ -137,4 +140,36 @@ function loadSingleMessageIntoMessageBox(data) {
     }
 
     messageBoxElement.appendChild(messageDivElement);
+
+    if (sendingLive) {
+        
+        // adding msg into side chat-card preview of latest msg
+
+        if (data["msg_from_username"] === document.getElementById("message-box-header-name").innerText){
+            // message is coming from my friend
+            var chatCardLatestMessageFrom = document.getElementById(`chat-card-lastest-msg-from-${data["msg_from_id"]}`);
+            var chatCardLatestMessage = document.getElementById(`chat-card-latest-msg-${data["msg_from_id"]}`);
+            
+            chatCardLatestMessageFrom.innerText = `${data["msg_from_username"]}:`;
+            
+            var senderName = data["msg_from_username"];
+        }
+        else{
+            // im sending the message
+            var chatCardLatestMessageFrom = document.getElementById(`chat-card-lastest-msg-from-${data["msg_to_id"]}`);
+            var chatCardLatestMessage = document.getElementById(`chat-card-latest-msg-${data["msg_to_id"]}`);
+            
+            chatCardLatestMessageFrom.innerText = "You:";
+            var senderName = "You";
+        }
+
+        var msg = data["msg"];
+
+        if (msg.length + senderName.length > PREVIEW_MSG_LENGTH_ALLOWED){
+            const difference = PREVIEW_MSG_LENGTH_ALLOWED - (msg.length + senderName.length);
+            msg = msg.slice(0, difference) + "...";
+        }
+
+        chatCardLatestMessage.innerText = msg;
+    }
 }

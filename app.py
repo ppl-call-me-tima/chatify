@@ -36,6 +36,8 @@ app.config["MAX_CONTENT_LENGTH"] = 64 * 1000 * 1000  # 64MB
 IST = timezone("Asia/Kolkata")
 # Profanity Checking
 profanity = load_profanity_checking()
+# Latest Message Prievew Loading
+PREVIEW_MSG_LENGTH_ALLOWED = 45
 
 
 @socketio.on("connect")
@@ -130,6 +132,8 @@ def message(data):
     })
     
     json_data = {
+        "msg_from_id": session.get("user_id"),
+        "msg_to_id": rows[0]["friend_id"],
         "msg_from_username": session.get("username"),
         "msg_to_username": data["msg_to"],
         "msg": data["message"],
@@ -161,6 +165,39 @@ def index():
         JOIN user ON user.id = f.friend_id
     """, {"user_id": session.get("user_id")})
     
+    for i in range(len(rows)):
+        
+        lastest_msg = execute_retrieve("""
+            SELECT msg_from, msg
+            FROM messages
+            WHERE 
+            (
+                msg_from = :id AND msg_to = :friend_id
+                OR msg_from = :friend_id AND msg_to = :id
+            )
+            ORDER BY timestamp DESC
+            LIMIT 1;
+        """, {
+            "id": session.get("user_id"), 
+            "friend_id": rows[i]["friend_id"]
+        })
+        
+        if lastest_msg:
+            rows[i]["msg"] = lastest_msg[0]["msg"]
+            rows[i]["msg_from"] = lastest_msg[0]["msg_from"]   
+        else:
+            rows[i]["msg"] = ""
+            rows[i]["msg_from"] = ""
+            
+        if rows[i]["msg_from"] == session.get("user_id"):
+            sender_name = "You"
+        else:
+            sender_name = rows[i]["username"]
+            
+        if len(rows[i]["msg"]) + len(sender_name) > PREVIEW_MSG_LENGTH_ALLOWED:
+            difference = PREVIEW_MSG_LENGTH_ALLOWED - (len(rows[i]["msg"]) + len(sender_name))
+            rows[i]["msg"] = rows[i]["msg"][:difference] + "..."
+            
     return render_template("index.html", rows=rows, index=True)
 
 
@@ -633,4 +670,4 @@ def upload_pfp():
 
 
 if __name__ == "__main__":
-    socketio.run(app, allow_unsafe_werkzeug=True, host="0.0.0.0")
+    socketio.run(app, allow_unsafe_werkzeug=True, host="0.0.0.0", debug=True)
