@@ -68,3 +68,18 @@
     width: 10%;
     margin-inline-start: 0.4vw;
 }
+
+#profanity-warning-box {
+    padding: 1% 2%;
+    justify-items: center;
+    position: absolute;
+    top: 50%;
+    left: 57%;
+    border: 1px solid black;
+    border-radius: 10px;
+    background-color: lightgray;
+  }
+  
+  .profanity-warning-box {
+    visibility: hidden;
+  }
