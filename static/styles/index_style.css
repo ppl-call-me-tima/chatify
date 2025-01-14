@@ -15,7 +15,7 @@
     border-right: 1px solid grey;
 }
 
-#no-friends-box{
+#no-friends-box {
     font-size: large;
     padding-top: 50%;
     padding-left: 10%;
@@ -43,7 +43,7 @@
     height: 75%;
 }
 
-.message{
+.message {
     padding: 1% 2%;
     width: fit-content;
     max-width: 60%;
@@ -52,7 +52,7 @@
     background-color: azure;
 }
 
-.sent-message{
+.sent-message {
     justify-self: end;
 }
 
@@ -78,8 +78,35 @@
     border: 1px solid black;
     border-radius: 10px;
     background-color: lightgray;
-  }
-  
-  .profanity-warning-box {
+}
+
+.profanity-warning-box {
     visibility: hidden;
-  }
+}
+
+.loader {
+    position: absolute;
+    top: 50%;
+    left: 60%;
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid #3498db;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+    visibility: hidden;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.show {
+    visibility: visible;
+}

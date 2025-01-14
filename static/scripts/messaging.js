@@ -55,6 +55,8 @@ socketio.on("load_messages", (rows) => {
     document.getElementById("message-box").innerHTML = "";
     document.getElementById("message-box").style.height = "auto";
 
+    document.getElementById("loader").classList.toggle("show");
+
     for (const row of rows) {
         loadSingleMessageIntoMessageBox(row);
     }
@@ -83,6 +85,9 @@ function mouseOutChatCard(element, id) {
 }
 
 const joinRoom = (friend_id, username) => {
+    document.getElementById("message-box").innerHTML = "";
+    document.getElementById("loader").classList.toggle("show");
+
     socketio.emit("join_a_room", parseInt(friend_id));
 
     if (currentOpenedChatId.length !== 0) {
