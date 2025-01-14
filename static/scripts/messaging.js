@@ -26,14 +26,13 @@ function resetMessageBox() {
     document.getElementById("message-box-header").style.borderBottom = "none";
     document.getElementById("message-box-header").innerHTML = `<br>`;
 
+    document.getElementById("message-box").style.height = "75%";
 
-    document.getElementById("message-box-outer").innerHTML = `
-        <div id="message-box">
-            <div id="default-box">
-                <span id="default-message-box-display" class="geist-mono-400">
-                    SELECT A FRIEND TO START CHATTING
-                </span>
-            </div>
+    document.getElementById("message-box").innerHTML = `
+        <div id="default-box">
+            <span id="default-message-box-display" class="geist-mono-400">
+                SELECT A FRIEND TO START CHATTING
+            </span>
         </div>
     `;
 }
