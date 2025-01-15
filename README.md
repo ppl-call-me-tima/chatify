@@ -1,6 +1,8 @@
 # Chatify
 Chatify is an online messaging web app made using Flask and Socket.IO wherein you can create friends and chat with them live!
 
+Short Video Demo: https://youtu.be/2klEwbfnoTY
+
 ## Features
 ### Some of the main features that are currently available :
 
