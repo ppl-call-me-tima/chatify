@@ -48,7 +48,7 @@ def flash_and_redirect(msg: str, func: str, **kwargs):
 
 
 def is_profane(msg, profanity):
-    msg_words = msg.split()
+    msg_words = msg.lower().split()
     
     for word in msg_words:
         if word in profanity:
