@@ -590,6 +590,7 @@ def profile(username):
             WHERE low_friend_id = :user_id OR high_friend_id = :user_id
         ) AS f
         JOIN user ON user.id = f.friend_id
+        ORDER BY user.username COLLATE utf8mb4_general_ci;
     """, {"user_id": rows[0]["id"]})
     
     return render_template("profile.html", row=rows[0], self_profile=self_profile, friendship_id=friendship_id, friends=friends)
