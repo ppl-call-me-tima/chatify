@@ -12,11 +12,21 @@
   font-style: normal;
 }
 
+.pacifico-regular {
+  font-family: "Pacifico", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
 .geist-mono-500 {
   font-family: "Geist Mono", monospace;
   font-optical-sizing: auto;
   font-weight: 500;
   font-style: normal;
+}
+
+#chatify-navbar-logo {
+  margin-left: 43.5%;
 }
 
 #sign-up-link-on-login {
