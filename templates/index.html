@@ -24,7 +24,7 @@ Homepage
             {% endif %}
 
             {% for row in rows %}
-            <button id="friend-button" class="btn p-0" onclick="joinRoom('{{ row.friend_id }}', '{{ row.username }}')">
+            <button id="friend-button" class="btn p-0" onclick="joinRoom('{{ row.friend_id }}', '{{ row.username }}', '{{ row.last_seen }}')">
                 <div id="chat-card-{{ row.friend_id }}" class="px-3 py-3" onmouseover="mouseOverChatCard(this)" onmouseout="mouseOutChatCard(this, '{{ row.friend_id }}')" style="background-color: white;">
                     <div class="row">
                         <div class="col-2">
@@ -64,7 +64,7 @@ Homepage
             {% endfor %}
         </div>
         <div id="right-col-box-outer" class="col p-0">
-            <div id="message-box-header" class="geist-mono-500">
+            <div id="message-box-header">
                 <br>
             </div>
             <div id="message-box-outer" class="px-2 py-1">

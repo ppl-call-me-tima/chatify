@@ -5,7 +5,7 @@ from database import execute, execute_retrieve
 from datetime import datetime, timedelta
 from flask import Flask, flash, jsonify, render_template, redirect, request, session, url_for
 from flask_socketio import SocketIO, join_room, leave_room, send, emit
-from helpers import add_friend_automatically, allowed_file, flash_and_redirect, is_profane, is_profanity_enabled, load_profanity_checking, login_required, log_user_in, new_user, send_get, url_for_pfp, user_count
+from helpers import add_friend_automatically, allowed_file, flash_and_redirect, is_profane, is_profanity_enabled, load_profanity_checking, login_required, log_user_in, new_user, send_get, time_difference, url_for_pfp, user_count
 from markupsafe import escape
 from pytz import timezone
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -151,7 +151,8 @@ def index():
             f.id AS friendship_id, 
             f.friend_id, 
             user.username, 
-            user.pfp_filename
+            user.pfp_filename,
+            user.lastOnline
         FROM
         (
             SELECT friendships.id,
@@ -197,7 +198,10 @@ def index():
         if len(rows[i]["msg"]) + len(sender_name) > PREVIEW_MSG_LENGTH_ALLOWED:
             difference = PREVIEW_MSG_LENGTH_ALLOWED - (len(rows[i]["msg"]) + len(sender_name))
             rows[i]["msg"] = rows[i]["msg"][:difference] + "..."
-            
+        
+        current_time = datetime.now(tz=IST).strftime(r"%Y%m%d%H%M")
+        rows[i]["last_seen"] = time_difference(rows[i]["lastOnline"], current_time)
+        
     return render_template("index.html", rows=rows, index=True)
 
 

@@ -83,7 +83,7 @@ function mouseOutChatCard(element, id) {
     }
 }
 
-const joinRoom = (friend_id, username) => {
+const joinRoom = (friend_id, username, lastSeen) => {
     document.getElementById("message-box").innerHTML = "";
     document.getElementById("loader").classList.toggle("show");
 
@@ -104,11 +104,25 @@ const joinRoom = (friend_id, username) => {
     anchor.id = "message-box-header-name";
     anchor.href = `/profile/${username}`;
     anchor.innerText = username;
+    anchor.classList.add("geist-mono-500");
+    anchor.classList.add("col-12");
     anchor.style.textDecoration = "none";
     anchor.style.color = "black";
 
+    var div = document.createElement("div");
+    div.style.fontSize = "small";
+    div.classList.add("geist-mono-200");
+
+    if (lastSeen.length !== 0) {
+        div.innerText = `last login ${lastSeen} ago`;
+    }
+    else{
+        div.innerText = "[update: when they next login, the time will show up here]"
+    }
+
     document.getElementById("message-box-header").innerHTML = "";
     document.getElementById("message-box-header").appendChild(anchor);
+    document.getElementById("message-box-header").appendChild(div);
 }
 
 const sendMessage = () => {
@@ -146,30 +160,30 @@ function loadSingleMessageIntoMessageBox(data, sendingLive = false) {
     messageBoxElement.appendChild(messageDivElement);
 
     if (sendingLive) {
-        
+
         // adding msg into side chat-card preview of latest msg
 
-        if (data["msg_from_username"] === document.getElementById("message-box-header-name").innerText){
+        if (data["msg_from_username"] === document.getElementById("message-box-header-name").innerText) {
             // message is coming from my friend
             var chatCardLatestMessageFrom = document.getElementById(`chat-card-lastest-msg-from-${data["msg_from_id"]}`);
             var chatCardLatestMessage = document.getElementById(`chat-card-latest-msg-${data["msg_from_id"]}`);
-            
+
             chatCardLatestMessageFrom.innerText = `${data["msg_from_username"]}:`;
-            
+
             var senderName = data["msg_from_username"];
         }
-        else{
+        else {
             // im sending the message
             var chatCardLatestMessageFrom = document.getElementById(`chat-card-lastest-msg-from-${data["msg_to_id"]}`);
             var chatCardLatestMessage = document.getElementById(`chat-card-latest-msg-${data["msg_to_id"]}`);
-            
+
             chatCardLatestMessageFrom.innerText = "You:";
             var senderName = "You";
         }
 
         var msg = data["msg"];
 
-        if (msg.length + senderName.length > PREVIEW_MSG_LENGTH_ALLOWED){
+        if (msg.length + senderName.length > PREVIEW_MSG_LENGTH_ALLOWED) {
             const difference = PREVIEW_MSG_LENGTH_ALLOWED - (msg.length + senderName.length);
             msg = msg.slice(0, difference) + "...";
         }
