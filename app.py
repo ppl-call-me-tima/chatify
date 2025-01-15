@@ -281,9 +281,9 @@ def details():
         return render_template("details.html")
 
 
-@app.route("/friends/myfriends")
+@app.route("/friends/my_friends")
 @login_required
-def myfriends():    
+def my_friends():    
     rows = execute_retrieve("""
         SELECT 
             f.id AS friendship_id, 
@@ -303,10 +303,10 @@ def myfriends():
         JOIN user ON user.id = f.friend_id
     """, {"user_id": session.get("user_id")})
     
-    return render_template("myfriends.html", rows=rows)
+    return render_template("my_friends.html", rows=rows)
 
 
-@app.route("/friends/myfriends/remove", methods=["POST"])
+@app.route("/friends/my_friends/remove", methods=["POST"])
 @login_required
 def remove():
     friendship_id = request.form.get("friendship_id")
@@ -321,7 +321,7 @@ def remove():
         if request.form.get("sent_from_profile"):
             return redirect(f"/profile/{request.form.get('username')}")
         else:
-            return redirect("/friends/myfriends")
+            return redirect("/friends/my_friends")
                 
     execute("DELETE FROM friendships WHERE id = :friendship_id", {"friendship_id": friendship_id})  
     
@@ -329,12 +329,12 @@ def remove():
     if request.form.get("sent_from_profile"):
         return redirect(f"/profile/{request.form.get('username')}")
     else:
-        return redirect("/friends/myfriends")
+        return redirect("/friends/my_friends")
     
 
-@app.route("/friends/friendrequests")
+@app.route("/friends/friend_requests")
 @login_required
-def friendrequests():    
+def friend_requests():    
     rows = execute_retrieve("""
         SELECT 
             friend_requests.id AS req_id, 
@@ -348,12 +348,12 @@ def friendrequests():
             AND friend_requests.req_from = user.id;
     """, {"to": session.get("user_id")})
     
-    return render_template("friendrequests.html", rows=rows)
+    return render_template("friend_requests.html", rows=rows)
 
 
-@app.route("/friends/friendrequests/reject", methods=["POST"])
+@app.route("/friends/friend_requests/reject", methods=["POST"])
 @login_required
-def rejectfriendrequest():
+def reject_friend_request():
     if request.method == "POST":
         req_id = request.form.get("req_id")
         
@@ -363,12 +363,12 @@ def rejectfriendrequest():
             return flash_and_redirect("This rejection is not possible.")
         
         execute("DELETE FROM friend_requests WHERE id = :id", {"id": req_id})
-        return flash_and_redirect("Friend request rejected!", "friendrequests")
+        return flash_and_redirect("Friend request rejected!", "friend_requests")
     
 
-@app.route("/friends/friendrequests/accept", methods=["POST"])
+@app.route("/friends/friend_requests/accept", methods=["POST"])
 @login_required
-def acceptfriendrequest():
+def accept_friend_request():
     if request.method == "POST":
         req_id = int(request.form.get("req_id"))
         
@@ -376,7 +376,7 @@ def acceptfriendrequest():
                                 {"req_id": req_id})
                 
         if rows[0]["req_to"] != session.get("user_id"):
-            return flash_and_redirect("This friend request can't be accepted.", "friendrequests")
+            return flash_and_redirect("This friend request can't be accepted.", "friend_requests")
         
         low_friend_id, high_friend_id = sorted([rows[0]["req_from"], session.get("user_id")])
         
@@ -385,26 +385,26 @@ def acceptfriendrequest():
         
         execute("DELETE FROM friend_requests WHERE id = :id", {"id": req_id})
         
-        return flash_and_redirect("Friend request accepted!", "friendrequests")
+        return flash_and_redirect("Friend request accepted!", "friend_requests")
 
 
-@app.route("/friends/sendfriendrequests", methods=["GET", "POST"])
+@app.route("/friends/send_friend_requests", methods=["GET", "POST"])
 @login_required
-def sendfriendrequests():
+def send_friend_requests():
     if request.method == "POST":
         username = request.form.get("username")
         
         if not username:
-            return flash_and_redirect("Enter username!", "sendfriendrequests")
+            return flash_and_redirect("Enter username!", "send_friend_requests")
         
         if username == session.get("username"):
-            return flash_and_redirect("Cannot send friend request to yourself!", "sendfriendrequests")
+            return flash_and_redirect("Cannot send friend request to yourself!", "send_friend_requests")
         
         rows = execute_retrieve("SELECT id FROM user WHERE username = :username", 
                                 {"username": username})
         
         if not rows:
-            return flash_and_redirect("No such user found!", "sendfriendrequests")
+            return flash_and_redirect("No such user found!", "send_friend_requests")
         
         to_friend_id = rows[0]["id"]
         
@@ -416,7 +416,7 @@ def sendfriendrequests():
             if request.form.get("sent_from_profile"):
                 return redirect(f"/profile/{username}")
             else:
-                return redirect("/friends/sendfriendrequests")
+                return redirect("/friends/send_friend_requests")
                     
         low_friend_id, high_friend_id = sorted([session.get("user_id"), to_friend_id])
         
@@ -428,7 +428,7 @@ def sendfriendrequests():
             if request.form.get("sent_from_profile"):
                 return redirect(f"/profile/{username}")
             else:
-                return redirect("/friends/sendfriendrequests")
+                return redirect("/friends/send_friend_requests")
                     
         # Check for already present reverse friend request
         rows = execute_retrieve("SELECT id FROM friend_requests WHERE req_from = :from AND req_to = :to",
@@ -445,7 +445,7 @@ def sendfriendrequests():
             if request.form.get("sent_from_profile"):
                 return redirect(f"/profile/{username}")
             else:
-                return redirect("/friends/sendfriendrequests")
+                return redirect("/friends/send_friend_requests")
                     
         execute("INSERT INTO friend_requests (req_from, req_to) VALUES (:from, :to)", 
                 {"from": session.get("user_id"), "to": to_friend_id})
@@ -455,9 +455,9 @@ def sendfriendrequests():
         if request.form.get("sent_from_profile"):
             return redirect(f"/profile/{username}")
         else:
-            return redirect("/friends/sendfriendrequests")
+            return redirect("/friends/send_friend_requests")
     else:
-        return render_template("sendfriendrequests.html")
+        return render_template("send_friend_requests.html")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -671,4 +671,4 @@ def upload_pfp():
 
 
 if __name__ == "__main__":
-    socketio.run(app, allow_unsafe_werkzeug=True, host="0.0.0.0")
+    socketio.run(app, allow_unsafe_werkzeug=True, host="0.0.0.0", debug=True)

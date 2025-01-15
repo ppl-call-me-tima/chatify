@@ -69,12 +69,12 @@
 					{% if session.get("user_id") %}
 					<!-- friends dropdown -->
 					<li class="nav-item dropdown">
-						<a class="nav-link dropdown-toggle {% if request.endpoint in ['myfriends', 'friendrequests', 'sendfriendrequests'] %}active{% endif %}"
+						<a class="nav-link dropdown-toggle {% if request.endpoint in ['my_friends', 'friend_requests', 'send_friend_requests'] %}active{% endif %}"
 							href="#" role="button" data-bs-toggle="dropdown">Friends</a>
 						<ul class="dropdown-menu">
-							<li><a class="dropdown-item" href="/friends/myfriends">My Friends</a></li>
-							<li><a class="dropdown-item" href="/friends/friendrequests">Friend Requests</a></li>
-							<li><a class="dropdown-item" href="/friends/sendfriendrequests">Send Friend Request</a></li>
+							<li><a class="dropdown-item" href="/friends/my_friends">My Friends</a></li>
+							<li><a class="dropdown-item" href="/friends/friend_requests">Friend Requests</a></li>
+							<li><a class="dropdown-item" href="/friends/send_friend_requests">Send Friend Request</a></li>
 						</ul>
 					</li>
 					<li class="nav-item"><a class="nav-link {% if request.endpoint == 'profile' %}active{% endif %}"

@@ -24,13 +24,13 @@ Friend Requests
                                 href="/profile/{{ row.username }}">{{ row.username }}</a></h4>
                     </div>
                     <div class="col-2">
-                        <form action="/friends/friendrequests/reject" method="post">
+                        <form action="/friends/friend_requests/reject" method="post">
                             <input type="hidden" name="req_id" value="{{ row.req_id }}">
                             <input type="submit" class="btn btn-danger" value="Reject">
                         </form>
                     </div>
                     <div class="col">
-                        <form action="/friends/friendrequests/accept" method="post">
+                        <form action="/friends/friend_requests/accept" method="post">
                             <input type="hidden" name="req_id" value="{{ row.req_id }}">
                             <input type="submit" class="btn btn-success" value="Accept">
                         </form>
