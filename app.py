@@ -525,7 +525,10 @@ def register():
         
         if rows:
             return flash_and_redirect("Username already taken!", "register")
-                
+
+        if is_profane(username, profanity):
+            return flash_and_redirect("This username is not allowed!", "register")
+        
         execute("INSERT INTO user (username, hash) VALUES (:username, :hash)", 
                 {"username":username, "hash":generate_password_hash(password)})
 
