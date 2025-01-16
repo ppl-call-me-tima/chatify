@@ -78,20 +78,20 @@ Profile
         </div>
         
 
-        <div class="col-2">
+        <div class="col-1">
             {% if not self_profile%}
             {% if friendship_id %}
-            <form action="/friends/my_friends/remove" method="post">
+            <form action="/friends/my_friends/remove" method="post" style="width: fit-content;">
                 <input type="text" name="username" value="{{ row.username }}" hidden>
                 <input type="text" name="friendship_id" value="{{ friendship_id }}" hidden>
                 <input type="text" value="true" name="sent_from_profile" hidden>
-                <input class="form-control btn btn-danger" type="submit" value="Remove Friend" style="width: 70%">
+                <input class="form-control btn btn-danger" type="submit" value="Remove Friend">
             </form>
             {% else %}
-            <form action="/friends/send_friend_requests" method="post">
+            <form action="/friends/send_friend_requests" method="post" style="width: fit-content;">
                 <input type="text" value="{{ row.username }}" name="username" hidden>
                 <input type="text" value="true" name="sent_from_profile" hidden>
-                <input class="form-control btn btn-success" type="submit" value="Add Friend" style="width: 60%">
+                <input class="form-control btn btn-success" type="submit" value="Add Friend">
             </form>
             {% endif %}
             {% endif %}
