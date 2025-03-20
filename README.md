@@ -16,8 +16,8 @@ Short Video Demo: https://youtu.be/2klEwbfnoTY
     - Accept / Reject Requests
 
 - Messaging
-    - Choose a friend
-    - Chat with them in real-time
+    - Chat with friends in real-time
+    - Optional profanity filter for incoming messages
 
 ## Frameworks / Technologies Used
 1. Flask
