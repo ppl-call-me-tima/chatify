@@ -11,16 +11,12 @@ from pytz import timezone
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 
-from flask_apscheduler import APScheduler  # render.com inactivity prevention
+from schedule import init_scheduler, schedule_message
 
 app = Flask(__name__)
 s3 = boto3.client("s3")
 socketio = SocketIO(app)
-
-scheduler = APScheduler()
-scheduler.init_app(app)
-scheduler.start()
-scheduler.add_job(id="send_GET", func=send_get, trigger="interval", seconds=600)
+scheduler = init_scheduler(app)
 
 # S3 Stuff
 aws_bucket_name = os.environ["AWS_BUCKET_NAME"]
@@ -678,4 +674,4 @@ def upload_pfp():
 
 
 if __name__ == "__main__":
-    socketio.run(app, allow_unsafe_werkzeug=True, host="0.0.0.0")
+    socketio.run(app, allow_unsafe_werkzeug=True, host="0.0.0.0", debug=False)
