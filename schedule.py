@@ -4,6 +4,8 @@ from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from flask_apscheduler import APScheduler
 from helpers import send_get
 
+from datetime import datetime
+
 """
 The scheduler object from Flask-APScheduler - `APScheduler()` doesn't contain jobstore
 functionality, namely the `add_store()` method and `jobstore` parameter inside the `add_job()` method.
@@ -29,19 +31,31 @@ def init_scheduler(app):
     scheduler.init_app(app)
     scheduler.add_store(store=data_store, alias="mysql_jobstore")
     scheduler.start()
-    scheduler.add_job(id="send_GET", func=send_get, jobstore="mysql_jobstore", trigger="interval", seconds=600)  # render.com inactivity prevention
+    
+    if not scheduler.get_job("send_GET"):
+        scheduler.add_job(id="send_GET", func=send_get, jobstore="mysql_jobstore", trigger="interval", seconds=600)  # render.com inactivity prevention
 
     return scheduler
 
-def schedule_message(scheduler, msg, msg_from, msg_to, date):
+
+def add_schedule_message(scheduler, msg, msg_from, msg_to, date):
     kwargs = {
         "msg": msg,
         "msg_from": msg_from,
         "msg_to": msg_to
     }
     
-    # NOTE: if debug=True the server restarts multiple times, so the add_job() errors due to `ConflictingIdError`
-    scheduler.add_job(id="send_scheduled_msg", func=send_scheduled_msg, jobstore="mysql_jobstore", next_run_time=date, kwargs=kwargs)
+    job_id = datetime.now().strftime("%Y%m%d%H%M%S%f")
     
+    # NOTE: if debug=True the server restarts multiple times, so the add_job() errors due to `ConflictingIdError`
+    scheduler.add_job(
+        id=job_id, 
+        func=send_scheduled_msg, 
+        jobstore="mysql_jobstore", 
+        next_run_time=date, 
+        kwargs=kwargs
+    )
+
+
 def send_scheduled_msg(msg, msg_from, msg_to):
     print(f"{msg_from}: @{msg_to} {msg}")

@@ -11,7 +11,7 @@ from pytz import timezone
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 
-from schedule import init_scheduler, schedule_message
+from schedule import init_scheduler, add_schedule_message
 
 app = Flask(__name__)
 s3 = boto3.client("s3")
@@ -137,6 +137,28 @@ def message(data):
     }
     
     send(json_data, to=session.get("room_code"))
+
+
+@socketio.on("schedule_message")
+def schedule_message(data):
+    message = data["message"]
+    msg_to = data["msg_to"]
+    scheduled_at = data["scheduled_at"]
+    
+    date, time = scheduled_at.split("T")
+    year, month, day = map(int, date.split("-"))
+    hour, second = map(int, time.split(":"))
+    
+    date_time = datetime(year, month, day, hour, second)
+    msg_to_id = execute_retrieve("SELECT id FROM user WHERE username = :msg_to", {"msg_to": msg_to})[0]["id"]
+    
+    add_schedule_message(
+        scheduler=scheduler,
+        msg=message,
+        msg_from=str(session.get("user_id")),
+        msg_to=msg_to_id,
+        date=date_time
+    )
 
 
 @app.route("/")

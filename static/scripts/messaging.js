@@ -125,6 +125,23 @@ const joinRoom = (friend_id, username, lastSeen) => {
     document.getElementById("message-box-header").appendChild(div);
 }
 
+const scheduleMessage = () => {
+    const message = document.getElementById("message").value;
+    const username = document.getElementById("message-box-header-name").textContent;
+    const date = document.getElementById("date").value;
+    const time = document.getElementById("time").value;
+
+    const scheduled_at = date + "T" + time;
+
+    socketio.emit("schedule_message", {
+        msg_to: username,
+        message: message,
+        scheduled_at: scheduled_at
+    });
+    document.getElementById("message").value = "";
+    document.getElementById("send-button").disabled = true;
+}
+
 const sendMessage = () => {
     const message = document.getElementById("message").value;
     const username = document.getElementById("message-box-header-name").textContent;
